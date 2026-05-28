@@ -1,0 +1,68 @@
+[package]
+name = "akasha"
+version = "0.1.0"
+edition = "2021"
+authors = ["Vignesh S <applemacbook6sep2004@gmail.com>"]
+description = "The world's first Temporal-Semantic-Causal database — query across time, meaning, and causality simultaneously"
+license = "MIT"
+repository = "https://github.com/vignesh2027/akasha"
+homepage = "https://vignesh2027.github.io/akasha"
+keywords = ["database", "temporal", "vector-search", "causal", "embedded"]
+categories = ["database", "data-structures"]
+readme = "README.md"
+
+[[bin]]
+name = "akasha"
+path = "src/main.rs"
+
+[lib]
+name = "akasha"
+path = "src/lib.rs"
+
+[[bench]]
+name = "throughput"
+harness = false
+
+[[example]]
+name = "basic_usage"
+
+[[example]]
+name = "causal_chain"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+sled = "0.34"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+bincode = "1"
+axum = { version = "0.7", features = ["json"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+clap = { version = "4", features = ["derive", "color"] }
+thiserror = "1"
+anyhow = "1"
+sha2 = "0.10"
+hex = "0.4"
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+async-trait = "0.1"
+dashmap = "5"
+rand = "0.8"
+ordered-float = { version = "3", features = ["serde"] }
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+tempfile = "3"
+tokio-test = "0.4"
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3
+strip = true
+
+[profile.bench]
+lto = true
+opt-level = 3
