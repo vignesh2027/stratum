@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
-use stratum::{Stratum, RecordBuilder};
+use stratum::{RecordBuilder, Stratum};
 
 fn bench_insert(c: &mut Criterion) {
     let rt = tokio::runtime::Runtime::new().unwrap();
@@ -67,7 +67,9 @@ fn bench_query(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("semantic_search_k", k), &k, |b, &k| {
             let query: Vec<f32> = (0..128).map(|i| i as f32 / 128.0).collect();
             b.iter(|| {
-                let results = rt.block_on(db.find_similar(black_box(&query), k, 0.0)).unwrap();
+                let results = rt
+                    .block_on(db.find_similar(black_box(&query), k, 0.0))
+                    .unwrap();
                 black_box(results);
             });
         });
@@ -75,22 +77,24 @@ fn bench_query(c: &mut Criterion) {
 
     group.bench_function("time_range_1000_records", |b| {
         b.iter(|| {
-            let results = rt.block_on(
-                db.find_by_time(
+            let results = rt
+                .block_on(db.find_by_time(
                     chrono::DateTime::from_timestamp(0, 0).unwrap(),
                     chrono::Utc::now(),
                     100,
-                )
-            ).unwrap();
+                ))
+                .unwrap();
             black_box(results);
         });
     });
 
-    group.bench_function("aqsl_schema_filter", |b| {
+    group.bench_function("sqsl_schema_filter", |b| {
         b.iter(|| {
-            let results = rt.block_on(
-                db.query(black_box("FIND records WHERE schema = \"bench.v1\" LIMIT 100"))
-            ).unwrap();
+            let results = rt
+                .block_on(db.query(black_box(
+                    "FIND records WHERE schema = \"bench.v1\" LIMIT 100",
+                )))
+                .unwrap();
             black_box(results);
         });
     });

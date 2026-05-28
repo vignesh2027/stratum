@@ -1,10 +1,10 @@
+use super::parser::{Clause, OrderDir, SqslQuery};
 use crate::error::Result;
 use crate::record::Record;
 use crate::Stratum;
-use super::parser::{AqslQuery, Clause, OrderDir};
 
-/// Execute a parsed AQSL query against an Akasha database instance.
-pub async fn execute(query: AqslQuery, db: &Stratum) -> Result<Vec<Record>> {
+/// Execute a parsed SQSL query against a Stratum database instance.
+pub async fn execute(query: SqslQuery, db: &Stratum) -> Result<Vec<Record>> {
     // Step 1: Collect candidate sets from each clause.
     // For multi-clause queries, we intersect the results.
     let mut candidate_sets: Vec<Vec<Record>> = Vec::new();
@@ -68,7 +68,10 @@ async fn execute_clause(clause: &Clause, db: &Stratum) -> Result<Vec<Record>> {
             let ids = db.temporal.before(ts, usize::MAX);
             fetch_by_ids(db, &ids)
         }
-        Clause::SimilarTo { embedding, threshold } => {
+        Clause::SimilarTo {
+            embedding,
+            threshold,
+        } => {
             let hits = db.semantic.search(embedding, usize::MAX, *threshold);
             let mut records = Vec::new();
             for (id, _score) in hits {
@@ -92,7 +95,8 @@ async fn execute_clause(clause: &Clause, db: &Stratum) -> Result<Vec<Record>> {
         }
         Clause::Tag { key, value } => {
             let all: Vec<Record> = db.storage.scan_all()?.collect();
-            Ok(all.into_iter()
+            Ok(all
+                .into_iter()
                 .filter(|r| r.metadata.get(key).map(|v| v == value).unwrap_or(false))
                 .collect())
         }
@@ -111,13 +115,17 @@ fn fetch_by_ids(db: &Stratum, ids: &[crate::record::RecordId]) -> Result<Vec<Rec
 
 fn intersect_record_sets(sets: Vec<Vec<Record>>) -> Vec<Record> {
     use std::collections::HashSet;
-    if sets.is_empty() { return Vec::new(); }
+    if sets.is_empty() {
+        return Vec::new();
+    }
 
-    let id_sets: Vec<HashSet<[u8; 32]>> = sets.iter()
+    let id_sets: Vec<HashSet<[u8; 32]>> = sets
+        .iter()
         .map(|s| s.iter().map(|r| r.id).collect())
         .collect();
 
-    let common_ids: HashSet<[u8; 32]> = id_sets[0].iter()
+    let common_ids: HashSet<[u8; 32]> = id_sets[0]
+        .iter()
         .filter(|id| id_sets[1..].iter().all(|s| s.contains(*id)))
         .copied()
         .collect();
@@ -129,5 +137,3 @@ fn intersect_record_sets(sets: Vec<Vec<Record>>) -> Vec<Record> {
         .filter(|r| common_ids.contains(&r.id))
         .collect()
 }
-
-

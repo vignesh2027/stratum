@@ -1,10 +1,10 @@
-/// Demonstrates Akasha's causal graph: tracking event chains through a distributed system.
+/// Demonstrates Stratum's causal graph: tracking event chains through a distributed system.
 ///
 /// Scenario: A user request triggers a cascade of events across microservices.
-/// Akasha captures the full causal chain, letting you answer:
+/// Stratum captures the full causal chain, letting you answer:
 ///   "What caused this payment failure?"
 ///   "What downstream effects did this DB error have?"
-use stratum::{Stratum, RecordBuilder};
+use stratum::{RecordBuilder, Stratum};
 
 #[tokio::main]
 async fn main() -> stratum::Result<()> {
@@ -108,13 +108,24 @@ async fn main() -> stratum::Result<()> {
     println!("\n=== All effects of the original HTTP request (depth 5) ===");
     let effects = db.find_effects(&req_id, 5).await?;
     for e in &effects {
-        println!("  → [{}] {}", e.schema, e.data["status"].as_str().or(e.data["result"].as_str()).unwrap_or("—"));
+        println!(
+            "  → [{}] {}",
+            e.schema,
+            e.data["status"]
+                .as_str()
+                .or(e.data["result"].as_str())
+                .unwrap_or("—")
+        );
     }
 
     println!("\n=== What caused the payment failure? (ancestors) ===");
     let causes = db.find_causes(&payment_id, 3).await?;
     for c in &causes {
-        println!("  ← [{}] {}", c.schema, &c.data.to_string()[..60.min(c.data.to_string().len())]);
+        println!(
+            "  ← [{}] {}",
+            c.schema,
+            &c.data.to_string()[..60.min(c.data.to_string().len())]
+        );
     }
 
     println!("\n=== Shortest causal path: request → notification ===");
@@ -124,12 +135,12 @@ async fn main() -> stratum::Result<()> {
         None => println!("  No path found"),
     }
 
-    println!("\n=== AQSL: find events caused by the HTTP request ===");
-    let aqsl = format!(
+    println!("\n=== SQSL: find events caused by the HTTP request ===");
+    let sqsl = format!(
         "FIND records WHERE caused_by \"{}\" WITH depth 10",
         hex::encode(req_id)
     );
-    let results = db.query(&aqsl).await?;
+    let results = db.query(&sqsl).await?;
     println!("  {} records in causal subtree", results.len());
 
     Ok(())

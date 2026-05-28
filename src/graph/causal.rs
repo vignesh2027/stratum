@@ -92,7 +92,11 @@ impl CausalGraph {
             if &current == to {
                 return Some(path);
             }
-            let neighbors = self.forward.get(&current).map(|v| v.clone()).unwrap_or_default();
+            let neighbors = self
+                .forward
+                .get(&current)
+                .map(|v| v.clone())
+                .unwrap_or_default();
             for neighbor in neighbors {
                 if !visited.contains(&neighbor) {
                     visited.insert(neighbor);
@@ -131,9 +135,15 @@ impl CausalGraph {
                 continue;
             }
             let neighbors = if forward {
-                self.forward.get(&node).map(|v| v.clone()).unwrap_or_default()
+                self.forward
+                    .get(&node)
+                    .map(|v| v.clone())
+                    .unwrap_or_default()
             } else {
-                self.reverse.get(&node).map(|v| v.clone()).unwrap_or_default()
+                self.reverse
+                    .get(&node)
+                    .map(|v| v.clone())
+                    .unwrap_or_default()
             };
             for neighbor in neighbors {
                 if !visited.contains(&neighbor) {

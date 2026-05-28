@@ -1,9 +1,9 @@
-use crate::error::{StratumError, Result};
+use crate::error::{Result, StratumError};
 use crate::record::RecordId;
 
-/// A parsed AQSL (Akasha Query Specification Language) query.
+/// A parsed SQSL (Stratum Query Specification Language) query.
 #[derive(Debug, Clone)]
-pub struct AqslQuery {
+pub struct SqslQuery {
     pub clauses: Vec<Clause>,
     pub order: OrderDir,
     pub limit: usize,
@@ -57,16 +57,15 @@ impl TimeRef {
             TimeRef::NowMinus(delta) => {
                 chrono::Utc::now().timestamp_nanos_opt().unwrap_or(0) - delta
             }
-            TimeRef::Iso(s) => {
-                s.parse::<chrono::DateTime<chrono::Utc>>()
-                    .map(|dt| dt.timestamp_nanos_opt().unwrap_or(0))
-                    .unwrap_or(0)
-            }
+            TimeRef::Iso(s) => s
+                .parse::<chrono::DateTime<chrono::Utc>>()
+                .map(|dt| dt.timestamp_nanos_opt().unwrap_or(0))
+                .unwrap_or(0),
         }
     }
 }
 
-/// Parse an AQSL query string into a structured query plan.
+/// Parse an SQSL query string into a structured query plan.
 ///
 /// # Grammar (simplified)
 /// ```text
@@ -86,7 +85,7 @@ impl TimeRef {
 ///   schema = "<name>"
 ///   tag <key> = "<value>"
 /// ```
-pub fn parse(input: &str) -> Result<AqslQuery> {
+pub fn parse(input: &str) -> Result<SqslQuery> {
     let tokens = tokenize(input.trim());
     let mut p = Parser::new(tokens);
     p.parse_query()
@@ -104,7 +103,7 @@ enum Token {
     RParen,
     Comma,
     Equals,
-    EOF,
+    Eof,
 }
 
 fn tokenize(input: &str) -> Vec<Token> {
@@ -113,31 +112,59 @@ fn tokenize(input: &str) -> Vec<Token> {
 
     while let Some(&c) = chars.peek() {
         match c {
-            ' ' | '\t' | '\n' | '\r' => { chars.next(); }
-            '[' => { tokens.push(Token::LBracket); chars.next(); }
-            ']' => { tokens.push(Token::RBracket); chars.next(); }
-            '(' => { tokens.push(Token::LParen); chars.next(); }
-            ')' => { tokens.push(Token::RParen); chars.next(); }
-            ',' => { tokens.push(Token::Comma); chars.next(); }
-            '=' => { tokens.push(Token::Equals); chars.next(); }
+            ' ' | '\t' | '\n' | '\r' => {
+                chars.next();
+            }
+            '[' => {
+                tokens.push(Token::LBracket);
+                chars.next();
+            }
+            ']' => {
+                tokens.push(Token::RBracket);
+                chars.next();
+            }
+            '(' => {
+                tokens.push(Token::LParen);
+                chars.next();
+            }
+            ')' => {
+                tokens.push(Token::RParen);
+                chars.next();
+            }
+            ',' => {
+                tokens.push(Token::Comma);
+                chars.next();
+            }
+            '=' => {
+                tokens.push(Token::Equals);
+                chars.next();
+            }
             '"' | '\'' => {
                 let quote = c;
                 chars.next();
                 let mut s = String::new();
                 while let Some(&c2) = chars.peek() {
                     chars.next();
-                    if c2 == quote { break; }
+                    if c2 == quote {
+                        break;
+                    }
                     s.push(c2);
                 }
                 tokens.push(Token::StringLit(s));
             }
             '-' | '0'..='9' => {
                 let mut s = String::new();
-                if c == '-' { s.push(c); chars.next(); }
+                if c == '-' {
+                    s.push(c);
+                    chars.next();
+                }
                 while let Some(&c2) = chars.peek() {
                     if c2.is_ascii_digit() || c2 == '.' {
-                        s.push(c2); chars.next();
-                    } else { break; }
+                        s.push(c2);
+                        chars.next();
+                    } else {
+                        break;
+                    }
                 }
                 if let Ok(n) = s.parse::<f64>() {
                     tokens.push(Token::Number(n));
@@ -147,25 +174,53 @@ fn tokenize(input: &str) -> Vec<Token> {
                 let mut s = String::new();
                 while let Some(&c2) = chars.peek() {
                     if c2.is_alphanumeric() || c2 == '_' || c2 == '.' || c2 == ':' {
-                        s.push(c2); chars.next();
-                    } else { break; }
+                        s.push(c2);
+                        chars.next();
+                    } else {
+                        break;
+                    }
                 }
                 let upper = s.to_uppercase();
-                let kw = ["FIND", "RECORDS", "WHERE", "AND", "OR", "ORDER", "BY",
-                    "LIMIT", "OFFSET", "TIME", "BETWEEN", "AFTER", "BEFORE",
-                    "SIMILAR_TO", "EMBEDDING", "WITH", "THRESHOLD", "CAUSED_BY",
-                    "CAUSES", "SCHEMA", "TAG", "ASC", "DESC", "RELEVANCE",
-                    "NOW", "DEPTH"];
+                let kw = [
+                    "FIND",
+                    "RECORDS",
+                    "WHERE",
+                    "AND",
+                    "OR",
+                    "ORDER",
+                    "BY",
+                    "LIMIT",
+                    "OFFSET",
+                    "TIME",
+                    "BETWEEN",
+                    "AFTER",
+                    "BEFORE",
+                    "SIMILAR_TO",
+                    "EMBEDDING",
+                    "WITH",
+                    "THRESHOLD",
+                    "CAUSED_BY",
+                    "CAUSES",
+                    "SCHEMA",
+                    "TAG",
+                    "ASC",
+                    "DESC",
+                    "RELEVANCE",
+                    "NOW",
+                    "DEPTH",
+                ];
                 if kw.contains(&upper.as_str()) {
                     tokens.push(Token::Keyword(upper));
                 } else {
                     tokens.push(Token::Ident(s));
                 }
             }
-            _ => { chars.next(); }
+            _ => {
+                chars.next();
+            }
         }
     }
-    tokens.push(Token::EOF);
+    tokens.push(Token::Eof);
     tokens
 }
 
@@ -180,23 +235,27 @@ impl Parser {
     }
 
     fn peek(&self) -> &Token {
-        self.tokens.get(self.pos).unwrap_or(&Token::EOF)
+        self.tokens.get(self.pos).unwrap_or(&Token::Eof)
     }
 
     fn advance(&mut self) -> Token {
-        let t = self.tokens.get(self.pos).cloned().unwrap_or(Token::EOF);
-        if self.pos < self.tokens.len() { self.pos += 1; }
+        let t = self.tokens.get(self.pos).cloned().unwrap_or(Token::Eof);
+        if self.pos < self.tokens.len() {
+            self.pos += 1;
+        }
         t
     }
 
     fn expect_keyword(&mut self, kw: &str) -> Result<()> {
         match self.advance() {
             Token::Keyword(k) if k == kw => Ok(()),
-            t => Err(StratumError::QueryParse(format!("expected keyword {kw}, got {t:?}"))),
+            t => Err(StratumError::QueryParse(format!(
+                "expected keyword {kw}, got {t:?}"
+            ))),
         }
     }
 
-    fn parse_query(&mut self) -> Result<AqslQuery> {
+    fn parse_query(&mut self) -> Result<SqslQuery> {
         self.expect_keyword("FIND")?;
         self.expect_keyword("RECORDS")?;
 
@@ -205,7 +264,7 @@ impl Parser {
         let mut limit = 100usize;
         let mut offset = 0usize;
 
-        while self.peek() != &Token::EOF {
+        while self.peek() != &Token::Eof {
             match self.peek() {
                 Token::Keyword(k) if k == "WHERE" => {
                     self.advance();
@@ -232,11 +291,18 @@ impl Parser {
                         offset = n as usize;
                     }
                 }
-                _ => { self.advance(); }
+                _ => {
+                    self.advance();
+                }
             }
         }
 
-        Ok(AqslQuery { clauses, order, limit, offset })
+        Ok(SqslQuery {
+            clauses,
+            order,
+            limit,
+            offset,
+        })
     }
 
     fn parse_clause(&mut self) -> Result<Clause> {
@@ -259,7 +325,9 @@ impl Parser {
                         self.advance();
                         Ok(Clause::TimeBefore(self.parse_time_ref()?))
                     }
-                    t => Err(StratumError::QueryParse(format!("unexpected token after TIME: {t:?}")))
+                    t => Err(StratumError::QueryParse(format!(
+                        "unexpected token after TIME: {t:?}"
+                    ))),
                 }
             }
             Token::Keyword(k) if k == "SIMILAR_TO" => {
@@ -274,38 +342,65 @@ impl Parser {
                 let threshold = if matches!(self.peek(), Token::Keyword(k) if k == "WITH") {
                     self.advance();
                     self.expect_keyword("THRESHOLD")?;
-                    if let Token::Number(n) = self.advance() { n as f32 } else { 0.7 }
+                    if let Token::Number(n) = self.advance() {
+                        n as f32
+                    } else {
+                        0.7
+                    }
                 } else {
                     0.7
                 };
-                Ok(Clause::SimilarTo { embedding, threshold })
+                Ok(Clause::SimilarTo {
+                    embedding,
+                    threshold,
+                })
             }
             Token::Keyword(k) if k == "CAUSED_BY" => {
                 self.advance();
                 let hex_id = match self.advance() {
                     Token::StringLit(s) | Token::Ident(s) => s,
-                    t => return Err(StratumError::QueryParse(format!("expected hex ID, got {t:?}"))),
+                    t => {
+                        return Err(StratumError::QueryParse(format!(
+                            "expected hex ID, got {t:?}"
+                        )))
+                    }
                 };
                 let id = parse_hex_id(&hex_id)?;
                 let depth = if matches!(self.peek(), Token::Keyword(k) if k == "WITH") {
                     self.advance();
                     self.expect_keyword("DEPTH")?;
-                    if let Token::Number(n) = self.advance() { n as usize } else { 5 }
-                } else { 5 };
+                    if let Token::Number(n) = self.advance() {
+                        n as usize
+                    } else {
+                        5
+                    }
+                } else {
+                    5
+                };
                 Ok(Clause::CausedBy { id, depth })
             }
             Token::Keyword(k) if k == "CAUSES" => {
                 self.advance();
                 let hex_id = match self.advance() {
                     Token::StringLit(s) | Token::Ident(s) => s,
-                    t => return Err(StratumError::QueryParse(format!("expected hex ID, got {t:?}"))),
+                    t => {
+                        return Err(StratumError::QueryParse(format!(
+                            "expected hex ID, got {t:?}"
+                        )))
+                    }
                 };
                 let id = parse_hex_id(&hex_id)?;
                 let depth = if matches!(self.peek(), Token::Keyword(k) if k == "WITH") {
                     self.advance();
                     self.expect_keyword("DEPTH")?;
-                    if let Token::Number(n) = self.advance() { n as usize } else { 5 }
-                } else { 5 };
+                    if let Token::Number(n) = self.advance() {
+                        n as usize
+                    } else {
+                        5
+                    }
+                } else {
+                    5
+                };
                 Ok(Clause::Causes { id, depth })
             }
             Token::Keyword(k) if k == "SCHEMA" => {
@@ -313,7 +408,11 @@ impl Parser {
                 self.advance(); // =
                 let schema = match self.advance() {
                     Token::StringLit(s) | Token::Ident(s) => s,
-                    t => return Err(StratumError::QueryParse(format!("expected schema name, got {t:?}"))),
+                    t => {
+                        return Err(StratumError::QueryParse(format!(
+                            "expected schema name, got {t:?}"
+                        )))
+                    }
                 };
                 Ok(Clause::Schema(schema))
             }
@@ -321,16 +420,26 @@ impl Parser {
                 self.advance();
                 let key = match self.advance() {
                     Token::Ident(s) | Token::StringLit(s) => s,
-                    t => return Err(StratumError::QueryParse(format!("expected tag key, got {t:?}"))),
+                    t => {
+                        return Err(StratumError::QueryParse(format!(
+                            "expected tag key, got {t:?}"
+                        )))
+                    }
                 };
                 self.advance(); // =
                 let value = match self.advance() {
                     Token::StringLit(s) | Token::Ident(s) => s,
-                    t => return Err(StratumError::QueryParse(format!("expected tag value, got {t:?}"))),
+                    t => {
+                        return Err(StratumError::QueryParse(format!(
+                            "expected tag value, got {t:?}"
+                        )))
+                    }
                 };
                 Ok(Clause::Tag { key, value })
             }
-            t => Err(StratumError::QueryParse(format!("unexpected clause start: {t:?}")))
+            t => Err(StratumError::QueryParse(format!(
+                "unexpected clause start: {t:?}"
+            ))),
         }
     }
 
@@ -353,7 +462,9 @@ impl Parser {
                 }
                 Ok(TimeRef::Now)
             }
-            t => Err(StratumError::QueryParse(format!("expected time reference, got {t:?}")))
+            t => Err(StratumError::QueryParse(format!(
+                "expected time reference, got {t:?}"
+            ))),
         }
     }
 
@@ -376,7 +487,10 @@ impl Parser {
             Token::Keyword(k) if k == "TIME" => {
                 self.advance();
                 match self.peek().clone() {
-                    Token::Keyword(k) if k == "ASC" => { self.advance(); Ok(OrderDir::TimeAsc) }
+                    Token::Keyword(k) if k == "ASC" => {
+                        self.advance();
+                        Ok(OrderDir::TimeAsc)
+                    }
                     _ => Ok(OrderDir::TimeDesc),
                 }
             }
@@ -394,7 +508,8 @@ fn parse_hex_id(s: &str) -> Result<RecordId> {
         .map_err(|_| StratumError::QueryParse(format!("invalid hex ID: {s}")))?;
     if bytes.len() != 32 {
         return Err(StratumError::QueryParse(format!(
-            "hex ID must be 64 hex chars (32 bytes), got {} bytes", bytes.len()
+            "hex ID must be 64 hex chars (32 bytes), got {} bytes",
+            bytes.len()
         )));
     }
     let mut id = [0u8; 32];
@@ -415,8 +530,12 @@ mod tests {
 
     #[test]
     fn parse_similar_to() {
-        let q = parse("FIND records WHERE similar_to embedding([0.1, 0.2, 0.3]) WITH threshold 0.8").unwrap();
-        assert!(matches!(&q.clauses[0], Clause::SimilarTo { threshold, .. } if (*threshold - 0.8).abs() < 0.01));
+        let q =
+            parse("FIND records WHERE similar_to embedding([0.1, 0.2, 0.3]) WITH threshold 0.8")
+                .unwrap();
+        assert!(
+            matches!(&q.clauses[0], Clause::SimilarTo { threshold, .. } if (*threshold - 0.8).abs() < 0.01)
+        );
     }
 
     #[test]

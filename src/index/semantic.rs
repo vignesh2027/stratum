@@ -5,7 +5,7 @@ use std::sync::RwLock;
 /// A vector similarity index using the HNSW (Hierarchical Navigable Small World) algorithm.
 ///
 /// This is a hand-rolled, zero-dependency HNSW implementation optimized for
-/// Akasha's use case. It supports approximate nearest-neighbor search in O(log n)
+/// Stratum's use case. It supports approximate nearest-neighbor search in O(log n)
 /// expected time, with configurable recall/speed trade-offs via M and ef_construction.
 ///
 /// References:
@@ -57,13 +57,18 @@ impl SemanticIndex {
             // Accept any dimension (we set dim=128 as default but adapt)
         }
 
-        let node_id = self.next_id.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        let node_id = self
+            .next_id
+            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         let level = self.random_level();
 
-        self.nodes.insert(node_id, NodeData {
-            vector: embedding.to_vec(),
-            level,
-        });
+        self.nodes.insert(
+            node_id,
+            NodeData {
+                vector: embedding.to_vec(),
+                level,
+            },
+        );
         self.id_to_record.insert(node_id, record_id);
         self.record_to_node.insert(record_id, node_id);
 
@@ -109,9 +114,7 @@ impl SemanticIndex {
             .into_iter()
             .filter(|(_, sim)| *sim >= threshold)
             .take(k)
-            .filter_map(|(node_id, sim)| {
-                self.id_to_record.get(&node_id).map(|r| (*r, sim))
-            })
+            .filter_map(|(node_id, sim)| self.id_to_record.get(&node_id).map(|r| (*r, sim)))
             .collect()
     }
 
@@ -119,7 +122,8 @@ impl SemanticIndex {
         use std::collections::{BinaryHeap, HashSet};
 
         let mut visited: HashSet<NodeId> = HashSet::new();
-        let mut candidates: BinaryHeap<(ordered_float::OrderedFloat<f32>, NodeId)> = BinaryHeap::new();
+        let mut candidates: BinaryHeap<(ordered_float::OrderedFloat<f32>, NodeId)> =
+            BinaryHeap::new();
         let mut results: Vec<(NodeId, f32)> = Vec::new();
 
         if let Some(entry_data) = self.nodes.get(&entry) {
@@ -133,7 +137,9 @@ impl SemanticIndex {
 
             let neighbors = {
                 let layers = self.layers.read().unwrap();
-                layers[0].neighbors.get(&node_id)
+                layers[0]
+                    .neighbors
+                    .get(&node_id)
                     .map(|n| n.clone())
                     .unwrap_or_default()
             };
@@ -170,7 +176,8 @@ impl SemanticIndex {
         let connect_at = level.min(max_layer);
         for l in 0..=connect_at {
             if let Some(layer) = layers.get(l) {
-                let neighbor_ids: Vec<NodeId> = candidates.iter()
+                let neighbor_ids: Vec<NodeId> = candidates
+                    .iter()
                     .take(connect_count)
                     .map(|(id, _)| *id)
                     .collect();
@@ -220,7 +227,11 @@ pub fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
         norm_b += b[i] * b[i];
     }
     let denom = norm_a.sqrt() * norm_b.sqrt();
-    if denom < 1e-8 { 0.0 } else { dot / denom }
+    if denom < 1e-8 {
+        0.0
+    } else {
+        dot / denom
+    }
 }
 
 #[cfg(test)]
@@ -241,7 +252,11 @@ mod tests {
     fn cosine_identical_vectors() {
         let v = vec![1.0, 2.0, 3.0];
         let sim = cosine_similarity(&v, &v);
-        assert!((sim - 1.0).abs() < 1e-5, "identical vectors should have sim≈1, got {}", sim);
+        assert!(
+            (sim - 1.0).abs() < 1e-5,
+            "identical vectors should have sim≈1, got {}",
+            sim
+        );
     }
 
     #[test]
@@ -249,7 +264,11 @@ mod tests {
         let a = vec![1.0, 0.0, 0.0];
         let b = vec![0.0, 1.0, 0.0];
         let sim = cosine_similarity(&a, &b);
-        assert!(sim.abs() < 1e-5, "orthogonal vectors should have sim≈0, got {}", sim);
+        assert!(
+            sim.abs() < 1e-5,
+            "orthogonal vectors should have sim≈0, got {}",
+            sim
+        );
     }
 
     #[test]

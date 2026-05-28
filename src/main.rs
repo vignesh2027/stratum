@@ -1,7 +1,7 @@
-use stratum::Stratum;
 use clap::{Parser, Subcommand};
 use std::net::SocketAddr;
 use std::sync::Arc;
+use stratum::Stratum;
 
 #[derive(Parser)]
 #[command(
@@ -46,7 +46,7 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::from_default_env()
-                .add_directive("stratum=info".parse()?)
+                .add_directive("stratum=info".parse()?),
         )
         .init();
 
@@ -60,7 +60,10 @@ async fn main() -> anyhow::Result<()> {
 
             println!();
             println!("  ┌─────────────────────────────────────────┐");
-            println!("  │   S T R A T U M  v{}                 │", env!("CARGO_PKG_VERSION"));
+            println!(
+                "  │   S T R A T U M  v{}                 │",
+                env!("CARGO_PKG_VERSION")
+            );
             println!("  │   Temporal · Semantic · Causal Database  │");
             println!("  └─────────────────────────────────────────┘");
             println!();
@@ -73,15 +76,21 @@ async fn main() -> anyhow::Result<()> {
             axum::serve(listener, router).await?;
         }
 
-        Command::Insert { schema, data, causes } => {
+        Command::Insert {
+            schema,
+            data,
+            causes,
+        } => {
             let json_data: serde_json::Value = serde_json::from_str(&data)?;
-            let mut builder = stratum::RecordBuilder::new()
-                .schema(schema)
-                .data(json_data);
+            let mut builder = stratum::RecordBuilder::new().schema(schema).data(json_data);
 
             if let Some(causes_str) = causes {
                 let mut cause_ids = Vec::new();
-                for hex_id in causes_str.split(',').map(str::trim).filter(|s| !s.is_empty()) {
+                for hex_id in causes_str
+                    .split(',')
+                    .map(str::trim)
+                    .filter(|s| !s.is_empty())
+                {
                     let bytes = hex::decode(hex_id)?;
                     if bytes.len() != 32 {
                         anyhow::bail!("cause ID must be 64 hex chars: {}", hex_id);
@@ -100,12 +109,17 @@ async fn main() -> anyhow::Result<()> {
 
         Command::Get { id } => {
             let bytes = hex::decode(&id)?;
-            if bytes.len() != 32 { anyhow::bail!("ID must be 64 hex chars"); }
+            if bytes.len() != 32 {
+                anyhow::bail!("ID must be 64 hex chars");
+            }
             let mut rid = [0u8; 32];
             rid.copy_from_slice(&bytes);
             match db.get(&rid).await? {
                 Some(record) => println!("{}", serde_json::to_string_pretty(&record)?),
-                None => { eprintln!("Record not found: {}", id); std::process::exit(1); }
+                None => {
+                    eprintln!("Record not found: {}", id);
+                    std::process::exit(1);
+                }
             }
         }
 

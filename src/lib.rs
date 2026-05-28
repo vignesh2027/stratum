@@ -1,12 +1,12 @@
+pub mod api;
 pub mod error;
+pub mod graph;
+pub mod index;
+pub mod query;
 pub mod record;
 pub mod storage;
-pub mod index;
-pub mod graph;
-pub mod query;
-pub mod api;
 
-pub use error::{StratumError, Result};
+pub use error::{Result, StratumError};
 pub use record::{Record, RecordBuilder, RecordId};
 pub use storage::StorageEngine;
 
@@ -53,7 +53,12 @@ impl Stratum {
         let semantic = Arc::new(index::SemanticIndex::new(128));
         let causal = Arc::new(graph::CausalGraph::new());
 
-        let db = Self { storage, temporal, semantic, causal };
+        let db = Self {
+            storage,
+            temporal,
+            semantic,
+            causal,
+        };
         db.rebuild_indices().await?;
         Ok(db)
     }
@@ -64,7 +69,12 @@ impl Stratum {
         let temporal = Arc::new(index::TemporalIndex::new());
         let semantic = Arc::new(index::SemanticIndex::new(128));
         let causal = Arc::new(graph::CausalGraph::new());
-        Ok(Self { storage, temporal, semantic, causal })
+        Ok(Self {
+            storage,
+            temporal,
+            semantic,
+            causal,
+        })
     }
 
     /// Insert a record into Stratum. Returns the content-addressed ID.

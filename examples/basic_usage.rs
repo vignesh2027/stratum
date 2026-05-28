@@ -1,6 +1,6 @@
-/// Demonstrates basic Akasha operations: insert, get, time-range query, and semantic search.
-use stratum::{Stratum, RecordBuilder};
 use chrono::Utc;
+/// Demonstrates basic Stratum operations: insert, get, time-range query, and semantic search.
+use stratum::{RecordBuilder, Stratum};
 
 #[tokio::main]
 async fn main() -> stratum::Result<()> {
@@ -8,11 +8,31 @@ async fn main() -> stratum::Result<()> {
 
     // --- Insert records with semantic embeddings ---
     let records = vec![
-        ("payment.v1", serde_json::json!({"amount": 99.99, "currency": "USD", "status": "success"}), vec![1.0f32, 0.0, 0.0, 0.0]),
-        ("payment.v1", serde_json::json!({"amount": 50.00, "currency": "EUR", "status": "failed"}),  vec![0.9f32, 0.1, 0.0, 0.0]),
-        ("audit.v1",   serde_json::json!({"action": "login",  "user": "alice"}),                      vec![0.0f32, 1.0, 0.0, 0.0]),
-        ("audit.v1",   serde_json::json!({"action": "logout", "user": "alice"}),                      vec![0.0f32, 0.9, 0.1, 0.0]),
-        ("sensor.v1",  serde_json::json!({"temp": 72.3, "humidity": 45}),                             vec![0.0f32, 0.0, 1.0, 0.0]),
+        (
+            "payment.v1",
+            serde_json::json!({"amount": 99.99, "currency": "USD", "status": "success"}),
+            vec![1.0f32, 0.0, 0.0, 0.0],
+        ),
+        (
+            "payment.v1",
+            serde_json::json!({"amount": 50.00, "currency": "EUR", "status": "failed"}),
+            vec![0.9f32, 0.1, 0.0, 0.0],
+        ),
+        (
+            "audit.v1",
+            serde_json::json!({"action": "login",  "user": "alice"}),
+            vec![0.0f32, 1.0, 0.0, 0.0],
+        ),
+        (
+            "audit.v1",
+            serde_json::json!({"action": "logout", "user": "alice"}),
+            vec![0.0f32, 0.9, 0.1, 0.0],
+        ),
+        (
+            "sensor.v1",
+            serde_json::json!({"temp": 72.3, "humidity": 45}),
+            vec![0.0f32, 0.0, 1.0, 0.0],
+        ),
     ];
 
     let mut ids = Vec::new();
@@ -46,9 +66,11 @@ async fn main() -> stratum::Result<()> {
         println!("  score={:.3}  [{}]  {}", score, rec.schema, rec.data);
     }
 
-    // --- AQSL query ---
-    println!("\n=== AQSL query: payment records ===");
-    let results = db.query("FIND records WHERE schema = \"payment.v1\" LIMIT 10").await?;
+    // --- SQSL query ---
+    println!("\n=== SQSL query: payment records ===");
+    let results = db
+        .query("FIND records WHERE schema = \"payment.v1\" LIMIT 10")
+        .await?;
     for rec in &results {
         println!("  [{}] {}", rec.schema, rec.data);
     }

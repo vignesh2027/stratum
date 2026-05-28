@@ -48,7 +48,7 @@ impl StorageEngine {
         }
     }
 
-    /// Delete a record. Normally Akasha is append-only, but this is provided
+    /// Delete a record. Normally Stratum is append-only, but this is provided
     /// for compliance (GDPR right-to-erasure) scenarios.
     pub fn delete(&self, id: &RecordId) -> Result<bool> {
         Ok(self.records.remove(id)?.is_some())

@@ -1,5 +1,5 @@
-mod parser;
 mod executor;
+mod parser;
 
-pub use parser::{parse, AqslQuery, Clause, OrderDir, TimeRef};
 pub use executor::execute;
+pub use parser::{parse, Clause, OrderDir, SqslQuery, TimeRef};

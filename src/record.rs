@@ -1,4 +1,4 @@
-use crate::error::{StratumError, Result};
+use crate::error::{Result, StratumError};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -7,7 +7,7 @@ use std::collections::HashMap;
 /// A 32-byte content-addressed record ID (SHA-256).
 pub type RecordId = [u8; 32];
 
-/// An immutable, content-addressed record in Akasha.
+/// An immutable, content-addressed record in Stratum.
 ///
 /// Every field is frozen at write time. The `id` is the SHA-256 hash of
 /// (schema + data + timestamp), making records tamper-evident by construction.
@@ -138,9 +138,12 @@ impl RecordBuilder {
     /// Finalize and build the Record.
     pub fn build(self) -> Result<Record> {
         if self.schema.is_empty() {
-            return Err(StratumError::InvalidRecord("schema must not be empty".into()));
+            return Err(StratumError::InvalidRecord(
+                "schema must not be empty".into(),
+            ));
         }
-        let timestamp = self.timestamp
+        let timestamp = self
+            .timestamp
             .unwrap_or_else(|| Utc::now().timestamp_nanos_opt().unwrap_or(0));
         let id = Record::compute_id(&self.schema, &self.data, timestamp);
         Ok(Record {
