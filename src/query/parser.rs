@@ -1,4 +1,4 @@
-use crate::error::{AkashaError, Result};
+use crate::error::{StratumError, Result};
 use crate::record::RecordId;
 
 /// A parsed AQSL (Akasha Query Specification Language) query.
@@ -192,7 +192,7 @@ impl Parser {
     fn expect_keyword(&mut self, kw: &str) -> Result<()> {
         match self.advance() {
             Token::Keyword(k) if k == kw => Ok(()),
-            t => Err(AkashaError::QueryParse(format!("expected keyword {kw}, got {t:?}"))),
+            t => Err(StratumError::QueryParse(format!("expected keyword {kw}, got {t:?}"))),
         }
     }
 
@@ -259,7 +259,7 @@ impl Parser {
                         self.advance();
                         Ok(Clause::TimeBefore(self.parse_time_ref()?))
                     }
-                    t => Err(AkashaError::QueryParse(format!("unexpected token after TIME: {t:?}")))
+                    t => Err(StratumError::QueryParse(format!("unexpected token after TIME: {t:?}")))
                 }
             }
             Token::Keyword(k) if k == "SIMILAR_TO" => {
@@ -284,7 +284,7 @@ impl Parser {
                 self.advance();
                 let hex_id = match self.advance() {
                     Token::StringLit(s) | Token::Ident(s) => s,
-                    t => return Err(AkashaError::QueryParse(format!("expected hex ID, got {t:?}"))),
+                    t => return Err(StratumError::QueryParse(format!("expected hex ID, got {t:?}"))),
                 };
                 let id = parse_hex_id(&hex_id)?;
                 let depth = if matches!(self.peek(), Token::Keyword(k) if k == "WITH") {
@@ -298,7 +298,7 @@ impl Parser {
                 self.advance();
                 let hex_id = match self.advance() {
                     Token::StringLit(s) | Token::Ident(s) => s,
-                    t => return Err(AkashaError::QueryParse(format!("expected hex ID, got {t:?}"))),
+                    t => return Err(StratumError::QueryParse(format!("expected hex ID, got {t:?}"))),
                 };
                 let id = parse_hex_id(&hex_id)?;
                 let depth = if matches!(self.peek(), Token::Keyword(k) if k == "WITH") {
@@ -313,7 +313,7 @@ impl Parser {
                 self.advance(); // =
                 let schema = match self.advance() {
                     Token::StringLit(s) | Token::Ident(s) => s,
-                    t => return Err(AkashaError::QueryParse(format!("expected schema name, got {t:?}"))),
+                    t => return Err(StratumError::QueryParse(format!("expected schema name, got {t:?}"))),
                 };
                 Ok(Clause::Schema(schema))
             }
@@ -321,16 +321,16 @@ impl Parser {
                 self.advance();
                 let key = match self.advance() {
                     Token::Ident(s) | Token::StringLit(s) => s,
-                    t => return Err(AkashaError::QueryParse(format!("expected tag key, got {t:?}"))),
+                    t => return Err(StratumError::QueryParse(format!("expected tag key, got {t:?}"))),
                 };
                 self.advance(); // =
                 let value = match self.advance() {
                     Token::StringLit(s) | Token::Ident(s) => s,
-                    t => return Err(AkashaError::QueryParse(format!("expected tag value, got {t:?}"))),
+                    t => return Err(StratumError::QueryParse(format!("expected tag value, got {t:?}"))),
                 };
                 Ok(Clause::Tag { key, value })
             }
-            t => Err(AkashaError::QueryParse(format!("unexpected clause start: {t:?}")))
+            t => Err(StratumError::QueryParse(format!("unexpected clause start: {t:?}")))
         }
     }
 
@@ -353,7 +353,7 @@ impl Parser {
                 }
                 Ok(TimeRef::Now)
             }
-            t => Err(AkashaError::QueryParse(format!("expected time reference, got {t:?}")))
+            t => Err(StratumError::QueryParse(format!("expected time reference, got {t:?}")))
         }
     }
 
@@ -391,9 +391,9 @@ impl Parser {
 
 fn parse_hex_id(s: &str) -> Result<RecordId> {
     let bytes = hex::decode(s.trim())
-        .map_err(|_| AkashaError::QueryParse(format!("invalid hex ID: {s}")))?;
+        .map_err(|_| StratumError::QueryParse(format!("invalid hex ID: {s}")))?;
     if bytes.len() != 32 {
-        return Err(AkashaError::QueryParse(format!(
+        return Err(StratumError::QueryParse(format!(
             "hex ID must be 64 hex chars (32 bytes), got {} bytes", bytes.len()
         )));
     }

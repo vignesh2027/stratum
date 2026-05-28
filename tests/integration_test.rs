@@ -1,8 +1,8 @@
-use akasha::{Akasha, RecordBuilder};
+use stratum::{Stratum, RecordBuilder};
 use chrono::{Duration, Utc};
 
-async fn fresh_db() -> Akasha {
-    Akasha::open_memory().await.unwrap()
+async fn fresh_db() -> Stratum {
+    Stratum::open_memory().await.unwrap()
 }
 
 // ─── Insertion & Retrieval ──────────────────────────────────────────────────

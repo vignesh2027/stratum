@@ -1,9 +1,9 @@
 use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
-use akasha::{Akasha, RecordBuilder};
+use stratum::{Stratum, RecordBuilder};
 
 fn bench_insert(c: &mut Criterion) {
     let rt = tokio::runtime::Runtime::new().unwrap();
-    let db = rt.block_on(Akasha::open_memory()).unwrap();
+    let db = rt.block_on(Stratum::open_memory()).unwrap();
 
     let mut group = c.benchmark_group("insert");
     group.throughput(Throughput::Elements(1));
@@ -44,7 +44,7 @@ fn bench_insert(c: &mut Criterion) {
 fn bench_query(c: &mut Criterion) {
     let rt = tokio::runtime::Runtime::new().unwrap();
     let db = rt.block_on(async {
-        let db = Akasha::open_memory().await.unwrap();
+        let db = Stratum::open_memory().await.unwrap();
         let embedding_base: Vec<f32> = (0..128).map(|i| i as f32 / 128.0).collect();
         for i in 0..1000i64 {
             let mut emb = embedding_base.clone();

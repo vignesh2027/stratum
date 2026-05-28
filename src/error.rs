@@ -1,9 +1,9 @@
 use thiserror::Error;
 
-pub type Result<T> = std::result::Result<T, AkashaError>;
+pub type Result<T> = std::result::Result<T, StratumError>;
 
 #[derive(Debug, Error)]
-pub enum AkashaError {
+pub enum StratumError {
     #[error("Storage error: {0}")]
     Storage(#[from] sled::Error),
 

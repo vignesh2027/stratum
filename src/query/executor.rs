@@ -1,10 +1,10 @@
 use crate::error::Result;
 use crate::record::Record;
-use crate::Akasha;
+use crate::Stratum;
 use super::parser::{AqslQuery, Clause, OrderDir};
 
 /// Execute a parsed AQSL query against an Akasha database instance.
-pub async fn execute(query: AqslQuery, db: &Akasha) -> Result<Vec<Record>> {
+pub async fn execute(query: AqslQuery, db: &Stratum) -> Result<Vec<Record>> {
     // Step 1: Collect candidate sets from each clause.
     // For multi-clause queries, we intersect the results.
     let mut candidate_sets: Vec<Vec<Record>> = Vec::new();
@@ -44,7 +44,7 @@ pub async fn execute(query: AqslQuery, db: &Akasha) -> Result<Vec<Record>> {
     Ok(records)
 }
 
-async fn execute_clause(clause: &Clause, db: &Akasha) -> Result<Vec<Record>> {
+async fn execute_clause(clause: &Clause, db: &Stratum) -> Result<Vec<Record>> {
     match clause {
         Clause::TimeRange { from, to } => {
             let from_ns = from.to_nanos();
@@ -99,7 +99,7 @@ async fn execute_clause(clause: &Clause, db: &Akasha) -> Result<Vec<Record>> {
     }
 }
 
-fn fetch_by_ids(db: &Akasha, ids: &[crate::record::RecordId]) -> Result<Vec<Record>> {
+fn fetch_by_ids(db: &Stratum, ids: &[crate::record::RecordId]) -> Result<Vec<Record>> {
     let mut records = Vec::new();
     for id in ids {
         if let Some(r) = db.storage.get(id)? {

@@ -1,16 +1,16 @@
-use akasha::Akasha;
+use stratum::Stratum;
 use clap::{Parser, Subcommand};
 use std::net::SocketAddr;
 use std::sync::Arc;
 
 #[derive(Parser)]
 #[command(
-    name = "akasha",
+    name = "stratum",
     version = env!("CARGO_PKG_VERSION"),
     about = "Temporal-Semantic-Causal Database — query across time, meaning, and causality",
 )]
 struct Cli {
-    #[arg(short, long, default_value = "./akasha_data")]
+    #[arg(short, long, default_value = "./stratum_data")]
     db: String,
 
     #[command(subcommand)]
@@ -19,7 +19,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
-    /// Start the Akasha HTTP API server
+    /// Start the Stratum HTTP API server
     Serve {
         #[arg(short, long, default_value = "127.0.0.1:7777")]
         addr: String,
@@ -35,8 +35,8 @@ enum Command {
     },
     /// Retrieve a record by hex ID
     Get { id: String },
-    /// Execute an AQSL query
-    Query { aqsl: String },
+    /// Execute an SQSL query
+    Query { sqsl: String },
     /// Print database statistics
     Stats,
 }
@@ -46,25 +46,28 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::from_default_env()
-                .add_directive("akasha=info".parse()?)
+                .add_directive("stratum=info".parse()?)
         )
         .init();
 
     let cli = Cli::parse();
-    let db = Arc::new(Akasha::open(&cli.db).await?);
+    let db = Arc::new(Stratum::open(&cli.db).await?);
 
     match cli.command {
         Command::Serve { addr } => {
             let addr: SocketAddr = addr.parse()?;
-            let router = akasha::api::build_router(db.clone());
+            let router = stratum::api::build_router(db.clone());
 
-            println!("  ╔═══════════════════════════════════════╗");
-            println!("  ║        A K A S H A  v{}           ║", env!("CARGO_PKG_VERSION"));
-            println!("  ║   Temporal · Semantic · Causal DB     ║");
-            println!("  ╚═══════════════════════════════════════╝");
             println!();
-            println!("  Listening on http://{}", addr);
-            println!("  Database : {}", cli.db);
+            println!("  ┌─────────────────────────────────────────┐");
+            println!("  │   S T R A T U M  v{}                 │", env!("CARGO_PKG_VERSION"));
+            println!("  │   Temporal · Semantic · Causal Database  │");
+            println!("  └─────────────────────────────────────────┘");
+            println!();
+            println!("  ● Listening  http://{}", addr);
+            println!("  ● Database   {}", cli.db);
+            println!("  ● Docs       https://vignesh2027.github.io/stratum");
+            println!();
 
             let listener = tokio::net::TcpListener::bind(addr).await?;
             axum::serve(listener, router).await?;
@@ -72,7 +75,7 @@ async fn main() -> anyhow::Result<()> {
 
         Command::Insert { schema, data, causes } => {
             let json_data: serde_json::Value = serde_json::from_str(&data)?;
-            let mut builder = akasha::RecordBuilder::new()
+            let mut builder = stratum::RecordBuilder::new()
                 .schema(schema)
                 .data(json_data);
 
@@ -106,8 +109,8 @@ async fn main() -> anyhow::Result<()> {
             }
         }
 
-        Command::Query { aqsl } => {
-            let records = db.query(&aqsl).await?;
+        Command::Query { sqsl } => {
+            let records = db.query(&sqsl).await?;
             println!("Found {} record(s):", records.len());
             for record in records {
                 println!("  {} [{}] {}", record.id_hex(), record.schema, record.data);

@@ -4,11 +4,11 @@
 /// Akasha captures the full causal chain, letting you answer:
 ///   "What caused this payment failure?"
 ///   "What downstream effects did this DB error have?"
-use akasha::{Akasha, RecordBuilder};
+use stratum::{Stratum, RecordBuilder};
 
 #[tokio::main]
-async fn main() -> akasha::Result<()> {
-    let db = Akasha::open_memory().await?;
+async fn main() -> stratum::Result<()> {
+    let db = Stratum::open_memory().await?;
 
     // === Simulate a distributed trace as a causal chain ===
 

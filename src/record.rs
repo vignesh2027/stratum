@@ -1,4 +1,4 @@
-use crate::error::{AkashaError, Result};
+use crate::error::{StratumError, Result};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -138,7 +138,7 @@ impl RecordBuilder {
     /// Finalize and build the Record.
     pub fn build(self) -> Result<Record> {
         if self.schema.is_empty() {
-            return Err(AkashaError::InvalidRecord("schema must not be empty".into()));
+            return Err(StratumError::InvalidRecord("schema must not be empty".into()));
         }
         let timestamp = self.timestamp
             .unwrap_or_else(|| Utc::now().timestamp_nanos_opt().unwrap_or(0));

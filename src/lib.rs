@@ -6,26 +6,26 @@ pub mod graph;
 pub mod query;
 pub mod api;
 
-pub use error::{AkashaError, Result};
+pub use error::{StratumError, Result};
 pub use record::{Record, RecordBuilder, RecordId};
 pub use storage::StorageEngine;
 
 use std::path::Path;
 use std::sync::Arc;
 
-/// The primary Akasha database handle.
+/// The primary Stratum database handle.
 ///
-/// Akasha is an embedded temporal-semantic-causal database.
+/// Stratum is an embedded temporal-semantic-causal database.
 /// Every record is immutable, content-addressed, and queryable across
 /// three orthogonal dimensions: time, semantic similarity, and causal lineage.
 ///
 /// # Example
 /// ```rust,no_run
-/// use akasha::{Akasha, RecordBuilder};
+/// use stratum::{Stratum, RecordBuilder};
 ///
 /// #[tokio::main]
-/// async fn main() -> akasha::Result<()> {
-///     let db = Akasha::open("/tmp/mydb").await?;
+/// async fn main() -> stratum::Result<()> {
+///     let db = Stratum::open("/tmp/mydb").await?;
 ///
 ///     let record = RecordBuilder::new()
 ///         .schema("payment.v1")
@@ -38,15 +38,15 @@ use std::sync::Arc;
 ///     Ok(())
 /// }
 /// ```
-pub struct Akasha {
+pub struct Stratum {
     pub(crate) storage: Arc<StorageEngine>,
     pub(crate) temporal: Arc<index::TemporalIndex>,
     pub(crate) semantic: Arc<index::SemanticIndex>,
     pub causal: Arc<graph::CausalGraph>,
 }
 
-impl Akasha {
-    /// Open (or create) an Akasha database at the given path.
+impl Stratum {
+    /// Open (or create) a Stratum database at the given path.
     pub async fn open<P: AsRef<Path>>(path: P) -> Result<Self> {
         let storage = Arc::new(StorageEngine::open(path.as_ref())?);
         let temporal = Arc::new(index::TemporalIndex::new());
@@ -58,7 +58,7 @@ impl Akasha {
         Ok(db)
     }
 
-    /// Open an in-memory Akasha database (for testing/ephemeral use).
+    /// Open an in-memory Stratum database (for testing/ephemeral use).
     pub async fn open_memory() -> Result<Self> {
         let storage = Arc::new(StorageEngine::open_memory()?);
         let temporal = Arc::new(index::TemporalIndex::new());
@@ -67,7 +67,7 @@ impl Akasha {
         Ok(Self { storage, temporal, semantic, causal })
     }
 
-    /// Insert a record into Akasha. Returns the content-addressed ID.
+    /// Insert a record into Stratum. Returns the content-addressed ID.
     pub async fn insert(&self, record: Record) -> Result<RecordId> {
         let id = record.id;
         let ts = record.timestamp;
@@ -93,9 +93,9 @@ impl Akasha {
         self.storage.get(id)
     }
 
-    /// Execute an AQSL query string.
-    pub async fn query(&self, aqsl: &str) -> Result<Vec<Record>> {
-        let plan = query::parse(aqsl)?;
+    /// Execute an SQSL query string.
+    pub async fn query(&self, sqsl: &str) -> Result<Vec<Record>> {
+        let plan = query::parse(sqsl)?;
         query::execute(plan, self).await
     }
 
@@ -106,7 +106,11 @@ impl Akasha {
         to: chrono::DateTime<chrono::Utc>,
         limit: usize,
     ) -> Result<Vec<Record>> {
-        let ids = self.temporal.range(from.timestamp_nanos_opt().unwrap_or(0), to.timestamp_nanos_opt().unwrap_or(i64::MAX), limit);
+        let ids = self.temporal.range(
+            from.timestamp_nanos_opt().unwrap_or(0),
+            to.timestamp_nanos_opt().unwrap_or(i64::MAX),
+            limit,
+        );
         self.fetch_records(&ids).await
     }
 

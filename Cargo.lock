@@ -12,36 +12,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "akasha"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "axum",
- "bincode",
- "chrono",
- "clap",
- "criterion",
- "dashmap",
- "hex",
- "ordered-float",
- "rand",
- "serde",
- "serde_json",
- "sha2",
- "sled",
- "tempfile",
- "thiserror",
- "tokio",
- "tokio-test",
- "tower 0.4.13",
- "tower-http",
- "tracing",
- "tracing-subscriber",
- "uuid",
-]
-
-[[package]]
 name = "android_system_properties"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1369,6 +1339,36 @@ checksum = "3a766e1110788c36f4fa1c2b71b387a7815aa65f88ce0229841826633d93723e"
 dependencies = [
  "libc",
  "windows-sys",
+]
+
+[[package]]
+name = "stratum"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "axum",
+ "bincode",
+ "chrono",
+ "clap",
+ "criterion",
+ "dashmap",
+ "hex",
+ "ordered-float",
+ "rand",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sled",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "tokio-test",
+ "tower 0.4.13",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]

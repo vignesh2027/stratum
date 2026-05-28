@@ -1,5 +1,5 @@
 use crate::record::RecordBuilder;
-use crate::{Akasha, DbStats};
+use crate::{Stratum, DbStats};
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
@@ -12,7 +12,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 
-pub fn build_router(db: Arc<Akasha>) -> Router {
+pub fn build_router(db: Arc<Stratum>) -> Router {
     Router::new()
         .route("/", get(health))
         .route("/v1/stats", get(stats))
@@ -36,7 +36,7 @@ async fn health() -> Json<serde_json::Value> {
     }))
 }
 
-async fn stats(State(db): State<Arc<Akasha>>) -> Json<DbStats> {
+async fn stats(State(db): State<Arc<Stratum>>) -> Json<DbStats> {
     Json(db.stats().await)
 }
 
@@ -56,7 +56,7 @@ struct InsertResponse {
 }
 
 async fn insert_record(
-    State(db): State<Arc<Akasha>>,
+    State(db): State<Arc<Stratum>>,
     Json(req): Json<InsertRequest>,
 ) -> Result<Json<InsertResponse>, (StatusCode, Json<serde_json::Value>)> {
     let mut builder = RecordBuilder::new()
@@ -104,7 +104,7 @@ async fn insert_record(
 }
 
 async fn get_record(
-    State(db): State<Arc<Akasha>>,
+    State(db): State<Arc<Stratum>>,
     Path(id_hex): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let bytes = hex::decode(&id_hex)
@@ -128,7 +128,7 @@ struct QueryRequest {
 }
 
 async fn query_records(
-    State(db): State<Arc<Akasha>>,
+    State(db): State<Arc<Stratum>>,
     Json(req): Json<QueryRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     match db.query(&req.aqsl).await {
@@ -148,7 +148,7 @@ struct TimeSearchParams {
 }
 
 async fn search_by_time(
-    State(db): State<Arc<Akasha>>,
+    State(db): State<Arc<Stratum>>,
     Query(params): Query<TimeSearchParams>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     use chrono::{DateTime, Utc};
@@ -174,7 +174,7 @@ struct SimilarRequest {
 }
 
 async fn search_similar(
-    State(db): State<Arc<Akasha>>,
+    State(db): State<Arc<Stratum>>,
     Json(req): Json<SimilarRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let k = req.k.unwrap_or(10);
@@ -196,7 +196,7 @@ struct DepthParams {
 }
 
 async fn causal_effects(
-    State(db): State<Arc<Akasha>>,
+    State(db): State<Arc<Stratum>>,
     Path(id_hex): Path<String>,
     Query(params): Query<DepthParams>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -208,7 +208,7 @@ async fn causal_effects(
 }
 
 async fn causal_causes(
-    State(db): State<Arc<Akasha>>,
+    State(db): State<Arc<Stratum>>,
     Path(id_hex): Path<String>,
     Query(params): Query<DepthParams>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -220,7 +220,7 @@ async fn causal_causes(
 }
 
 async fn causal_path(
-    State(db): State<Arc<Akasha>>,
+    State(db): State<Arc<Stratum>>,
     Path((from_hex, to_hex)): Path<(String, String)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let from = parse_id_hex(&from_hex)?;

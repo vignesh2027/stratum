@@ -1,10 +1,10 @@
 /// Demonstrates basic Akasha operations: insert, get, time-range query, and semantic search.
-use akasha::{Akasha, RecordBuilder};
+use stratum::{Stratum, RecordBuilder};
 use chrono::Utc;
 
 #[tokio::main]
-async fn main() -> akasha::Result<()> {
-    let db = Akasha::open_memory().await?;
+async fn main() -> stratum::Result<()> {
+    let db = Stratum::open_memory().await?;
 
     // --- Insert records with semantic embeddings ---
     let records = vec![

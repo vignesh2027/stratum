@@ -3,473 +3,838 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Akasha — Temporal-Semantic-Causal Database</title>
-  <meta name="description" content="The world's first database that queries across three orthogonal dimensions simultaneously: time, meaning, and causality. Written in Rust."/>
-  <meta property="og:title" content="Akasha — Temporal-Semantic-Causal Database"/>
-  <meta property="og:description" content="Query across time, meaning, and causality simultaneously."/>
+  <title>Stratum — Temporal-Semantic-Causal Database</title>
+  <meta name="description" content="The world's first database that queries across three dimensions simultaneously: time, meaning, and causality. Written in Rust. Zero config. Embeddable."/>
+  <meta property="og:title" content="Stratum — Temporal-Semantic-Causal Database"/>
+  <meta property="og:description" content="Query your data across time, meaning, and causality in a single query."/>
+  <meta name="theme-color" content="#15803d"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-  <!-- Navigation -->
-  <nav class="nav">
+
+  <!-- ═══ NAVIGATION ═══════════════════════════════════════════════════ -->
+  <nav class="nav" id="nav">
     <div class="nav-inner">
       <a href="#" class="nav-logo">
-        <span class="logo-mark">◈</span>
-        <span class="logo-text">akasha</span>
+        <span class="logo-icon">◈</span>
+        <span class="logo-name">stratum</span>
       </a>
       <div class="nav-links">
         <a href="#features">Features</a>
-        <a href="#architecture">Architecture</a>
-        <a href="#query-language">AQSL</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#use-cases">Use Cases</a>
+        <a href="#query-language">SQSL</a>
         <a href="#api">API</a>
-        <a href="https://github.com/vignesh2027/akasha" target="_blank" class="nav-github">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          GitHub
-        </a>
+        <a href="#quick-start">Docs</a>
       </div>
+      <a href="https://github.com/vignesh2027/stratum" target="_blank" class="nav-cta">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-bg">
-      <div class="grid-overlay"></div>
-      <div class="glow glow-1"></div>
-      <div class="glow glow-2"></div>
-      <div class="glow glow-3"></div>
-    </div>
-    <div class="container">
-      <div class="badge">
-        <span class="badge-dot"></span>
-        Open Source · Written in Rust · MIT License
+  <!-- ═══ HERO ══════════════════════════════════════════════════════════ -->
+  <header class="hero">
+    <div class="hero-ornament"></div>
+    <div class="container hero-container">
+      <div class="hero-badge">
+        <span class="badge-pip"></span>
+        Open Source · v0.1.0 · Written in Rust · MIT License
       </div>
-      <h1 class="hero-title">
-        The Database That<br/>
-        <span class="gradient-text">Understands Time,<br/>Meaning &amp; Causality</span>
-      </h1>
-      <p class="hero-subtitle">
-        Akasha is the world's first <strong>Temporal-Semantic-Causal</strong> database.
-        Query your data across three orthogonal dimensions simultaneously —
-        <em>when</em> it happened, <em>what it means</em>, and <em>why it happened</em>.
-        No joins. No ETL. One query.
-      </p>
-      <div class="hero-cta">
-        <a href="https://github.com/vignesh2027/akasha" class="btn btn-primary" target="_blank">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          View on GitHub
-        </a>
-        <a href="#quick-start" class="btn btn-secondary">Get Started →</a>
-      </div>
-      <div class="hero-stats">
-        <div class="stat"><span class="stat-val">3</span><span class="stat-label">Query Dimensions</span></div>
-        <div class="stat-divider"></div>
-        <div class="stat"><span class="stat-val">45</span><span class="stat-label">Tests Passing</span></div>
-        <div class="stat-divider"></div>
-        <div class="stat"><span class="stat-val">O(log n)</span><span class="stat-label">Semantic Search</span></div>
-        <div class="stat-divider"></div>
-        <div class="stat"><span class="stat-val">0</span><span class="stat-label">External Dependencies*</span></div>
-      </div>
-      <p class="stat-note">*Zero runtime dependencies beyond the Rust standard library for core data structures</p>
-    </div>
 
-    <!-- Animated Query Demo -->
-    <div class="container">
-      <div class="demo-window">
-        <div class="demo-titlebar">
-          <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
-          <span class="demo-title">akasha query</span>
+      <h1 class="hero-title">
+        The Database That Thinks in
+        <span class="title-accent">Three Dimensions</span>
+      </h1>
+
+      <p class="hero-sub">
+        <strong>Stratum</strong> is the world's first <em>Temporal-Semantic-Causal</em> database.
+        In one query, ask <em>when</em> something happened,
+        <em>what it means</em> semantically, and <em>why</em> it happened —
+        without ETL, without joins, without compromises.
+      </p>
+
+      <div class="hero-actions">
+        <a href="https://github.com/vignesh2027/stratum" target="_blank" class="btn-primary">
+          View on GitHub
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#quick-start" class="btn-secondary">Quick Start</a>
+      </div>
+
+      <div class="hero-pills">
+        <span class="pill pill-green">⏱ Temporal Index</span>
+        <span class="pill pill-teal">🔍 HNSW Semantic Search</span>
+        <span class="pill pill-olive">🔗 Causal DAG</span>
+        <span class="pill pill-sage">📦 Embeddable</span>
+        <span class="pill pill-green">🦀 Zero Unsafe Rust</span>
+        <span class="pill pill-teal">45 Tests Passing</span>
+      </div>
+
+      <!-- Animated Query Window -->
+      <div class="query-window">
+        <div class="window-chrome">
+          <div class="chrome-dots">
+            <span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span>
+          </div>
+          <span class="chrome-label">stratum query</span>
+          <span class="chrome-badge">SQSL</span>
         </div>
-        <div class="demo-body">
-          <div class="query-line" id="q1"><span class="kw">FIND</span> <span class="kw">records</span></div>
-          <div class="query-line" id="q2"><span class="kw">WHERE</span> <span class="fn">time</span> <span class="kw">BETWEEN</span> <span class="str">"2024-01-01"</span> <span class="kw">AND</span> <span class="str">"2024-12-31"</span></div>
-          <div class="query-line" id="q3">  <span class="kw">AND</span> <span class="fn">similar_to</span> <span class="fn">embedding</span>([<span class="num">0.91</span>, <span class="num">0.23</span>, ...])</div>
-          <div class="query-line" id="q4">  &nbsp;&nbsp;&nbsp;<span class="kw">WITH</span> <span class="kw">threshold</span> <span class="num">0.85</span></div>
-          <div class="query-line" id="q5">  <span class="kw">AND</span> <span class="fn">caused_by</span> <span class="str">"a3f8..."</span> <span class="kw">WITH</span> <span class="kw">depth</span> <span class="num">3</span></div>
-          <div class="query-line" id="q6"><span class="kw">ORDER BY</span> <span class="fn">time</span> <span class="kw">DESC</span> <span class="kw">LIMIT</span> <span class="num">25</span></div>
-          <div class="query-result" id="qr">
-            <span class="result-arrow">▶</span>
-            <span class="result-text">Found <strong>7 records</strong> matching all three dimensions in <strong>0.4ms</strong></span>
+        <div class="window-body">
+          <div class="qline" id="ql1"><span class="k">FIND</span> <span class="k">records</span></div>
+          <div class="qline" id="ql2"><span class="k">WHERE</span> time <span class="k">BETWEEN</span> <span class="s">"2024-06-01"</span> <span class="k">AND</span> <span class="s">"2024-12-31"</span></div>
+          <div class="qline" id="ql3">&nbsp;&nbsp;<span class="k">AND</span> <span class="f">similar_to</span> <span class="f">embedding</span>([<span class="n">0.91</span>, <span class="n">0.23</span>, <span class="n">-0.14</span>, ...])</div>
+          <div class="qline" id="ql4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">WITH</span> threshold <span class="n">0.88</span></div>
+          <div class="qline" id="ql5">&nbsp;&nbsp;<span class="k">AND</span> <span class="f">caused_by</span> <span class="s">"a3f8e2b1c4..."</span> <span class="k">WITH</span> depth <span class="n">4</span></div>
+          <div class="qline" id="ql6">&nbsp;&nbsp;<span class="k">AND</span> tag environment = <span class="s">"production"</span></div>
+          <div class="qline" id="ql7"><span class="k">ORDER BY</span> time <span class="k">DESC</span> <span class="k">LIMIT</span> <span class="n">25</span></div>
+          <div class="qresult" id="qresult">
+            <span class="res-icon">✓</span>
+            Returned <strong>7 records</strong> across all three dimensions in <strong>0.4 ms</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ COMPARISON BANNER ════════════════════════════════════════════ -->
+  <section class="compare-bar">
+    <div class="container">
+      <p class="compare-text">
+        <strong>The gap no one has filled:</strong>
+        &nbsp;Time-series DBs know <em>when</em>.
+        Vector DBs know <em>what it means</em>.
+        Graph DBs know <em>why</em>.
+        <strong>Stratum knows all three.</strong>
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══ PROBLEM / COMPARISON TABLE ══════════════════════════════════ -->
+  <section class="section" id="comparison">
+    <div class="container">
+      <p class="section-eyebrow">The Problem</p>
+      <h2 class="section-title">Your Data Has Three Dimensions.<br/>Existing Databases Have One.</h2>
+      <p class="section-desc">
+        Every production event has temporal context (when it happened), semantic context (what it means),
+        and causal context (why it happened). Existing tools force you to pick one — or build expensive
+        pipelines that stitch three systems together. Stratum solves this natively.
+      </p>
+
+      <div class="comparison-table-wrap">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Database</th>
+              <th>Time Queries</th>
+              <th>Semantic Search</th>
+              <th>Causal Chains</th>
+              <th>Unified Query</th>
+              <th>Embeddable</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="db-name">InfluxDB / TimescaleDB</td>
+              <td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="partial">~</td>
+            </tr>
+            <tr>
+              <td class="db-name">Pinecone / Weaviate / Qdrant</td>
+              <td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td>
+            </tr>
+            <tr>
+              <td class="db-name">Neo4j / DGraph</td>
+              <td class="partial">~</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td>
+            </tr>
+            <tr>
+              <td class="db-name">PostgreSQL + pgvector</td>
+              <td class="yes">✓</td><td class="partial">~</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td>
+            </tr>
+            <tr class="highlight-row">
+              <td class="db-name stratum-name">◈ Stratum</td>
+              <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">~ = partial support &nbsp;·&nbsp; ✗ = not supported &nbsp;·&nbsp; ✓ = native, first-class support</p>
+    </div>
+  </section>
+
+  <!-- ═══ HOW IT WORKS ═════════════════════════════════════════════════ -->
+  <section class="section section-tinted" id="how-it-works">
+    <div class="container">
+      <p class="section-eyebrow">How It Works</p>
+      <h2 class="section-title">Three Indices. One Engine. One Query.</h2>
+      <p class="section-desc">
+        Stratum maintains three independent, concurrent indices over the same append-only,
+        content-addressed record store. A query planner intersects results from each active
+        clause at the record-ID level, then sorts and paginates.
+      </p>
+
+      <div class="how-grid">
+        <div class="how-card">
+          <div class="how-number">01</div>
+          <div class="how-icon-wrap green">⏱</div>
+          <h3>Temporal Index</h3>
+          <p>
+            Every record carries a nanosecond-precision logical timestamp.
+            Stratum maintains a concurrent <code>BTreeMap&lt;i64, Vec&lt;RecordId&gt;&gt;</code>
+            that supports O(log n) range scans. You can query any past window instantly —
+            "everything between 2pm and 3pm last Tuesday" is a single BTree range.
+          </p>
+          <pre class="how-code">time BETWEEN <span class="s">"2024-01-01"</span> AND <span class="s">"2024-03-31"</span>
+time AFTER <span class="s">"2024-06-01T00:00:00Z"</span>
+time BEFORE NOW - <span class="n">3600000000000</span>  <span class="c">// 1h ago</span></pre>
+        </div>
+
+        <div class="how-card">
+          <div class="how-number">02</div>
+          <div class="how-icon-wrap teal">🔍</div>
+          <h3>Semantic Index (HNSW)</h3>
+          <p>
+            Records optionally carry a float32 embedding vector. Stratum indexes these
+            in a hand-rolled <strong>Hierarchical Navigable Small World</strong> graph — the
+            state-of-the-art algorithm for approximate nearest-neighbor search, achieving
+            O(log n) query time. No external vector library. M=16, ef=200 by default,
+            fully configurable.
+          </p>
+          <pre class="how-code"><span class="f">similar_to</span> <span class="f">embedding</span>([<span class="n">0.1</span>, <span class="n">0.9</span>, ...])
+  <span class="k">WITH</span> threshold <span class="n">0.85</span>   <span class="c">// cosine similarity</span></pre>
+        </div>
+
+        <div class="how-card">
+          <div class="how-number">03</div>
+          <div class="how-icon-wrap olive">🔗</div>
+          <h3>Causal DAG</h3>
+          <p>
+            Each record can declare causal predecessors (the records that caused it).
+            Stratum builds a bidirectional adjacency-list DAG over these declarations.
+            You can traverse forward to find everything a record triggered, backward
+            to find its root causes, or find the shortest causal path between any
+            two records — all using concurrent BFS.
+          </p>
+          <pre class="how-code"><span class="f">caused_by</span> <span class="s">"a3f8..."</span> <span class="k">WITH</span> depth <span class="n">5</span>
+<span class="f">causes</span> <span class="s">"b1c2..."</span>   <span class="k">WITH</span> depth <span class="n">3</span></pre>
+        </div>
+
+        <div class="how-card">
+          <div class="how-number">04</div>
+          <div class="how-icon-wrap sage">📦</div>
+          <h3>Content-Addressed Storage</h3>
+          <p>
+            The storage layer is append-only, backed by <strong>sled</strong> (a pure-Rust
+            embedded database). Every record's key is the SHA-256 hash of
+            (schema + data + timestamp). This makes writes idempotent by construction —
+            inserting the same record twice is a no-op — and every record tamper-evident.
+          </p>
+          <pre class="how-code">id = SHA256(schema ‖ timestamp ‖ data)
+<span class="c">// identical records → identical IDs</span>
+<span class="c">// tamper = different ID</span></pre>
+        </div>
+      </div>
+
+      <!-- Architecture Diagram -->
+      <div class="arch-wrap">
+        <h3 class="arch-title">System Architecture</h3>
+        <div class="arch-diagram">
+          <div class="arch-row">
+            <div class="arch-box arch-api">
+              <strong>REST API</strong>
+              <span>Axum · HTTP/JSON · CORS</span>
+            </div>
+            <div class="arch-box arch-cli">
+              <strong>CLI</strong>
+              <span>clap · serve/insert/query</span>
+            </div>
+          </div>
+          <div class="arch-arrow-down">↓</div>
+          <div class="arch-row single">
+            <div class="arch-box arch-query">
+              <strong>SQSL Query Engine</strong>
+              <span>Recursive descent parser → Logical plan → Intersect &amp; Rank executor</span>
+            </div>
+          </div>
+          <div class="arch-arrow-down">↓</div>
+          <div class="arch-row three">
+            <div class="arch-box arch-temporal">
+              <strong>⏱ Temporal</strong>
+              <span>BTreeMap&lt;i64, Vec&lt;Id&gt;&gt;</span>
+              <span>RwLock · O(log n)</span>
+            </div>
+            <div class="arch-box arch-semantic">
+              <strong>🔍 Semantic</strong>
+              <span>HNSW Graph</span>
+              <span>DashMap · O(log n)</span>
+            </div>
+            <div class="arch-box arch-causal">
+              <strong>🔗 Causal</strong>
+              <span>Adj. Lists</span>
+              <span>DashMap · BFS O(V+E)</span>
+            </div>
+          </div>
+          <div class="arch-arrow-down">↓</div>
+          <div class="arch-row single">
+            <div class="arch-box arch-storage">
+              <strong>Storage Engine (sled)</strong>
+              <span>SHA-256 content-addressed keys · Append-only · JSON values · ACID · Startup index rebuild</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- The Problem -->
-  <section class="section" id="problem">
-    <div class="container">
-      <div class="section-label">The Problem</div>
-      <h2 class="section-title">Modern Data Is Three-Dimensional.<br/>Your Database Is Not.</h2>
-      <div class="problem-grid">
-        <div class="problem-card">
-          <div class="problem-icon">⏱</div>
-          <h3>Time-series databases</h3>
-          <p>Know <em>when</em> things happened, but can't answer <em>why</em> or search by <em>meaning</em>.</p>
-        </div>
-        <div class="problem-card">
-          <div class="problem-icon">🔍</div>
-          <h3>Vector databases</h3>
-          <p>Know <em>what things mean</em>, but have no notion of time or causal relationships.</p>
-        </div>
-        <div class="problem-card">
-          <div class="problem-icon">🔗</div>
-          <h3>Graph databases</h3>
-          <p>Know <em>relationships</em>, but lack temporal ordering and semantic similarity.</p>
-        </div>
-        <div class="problem-card problem-card-solution">
-          <div class="problem-icon">◈</div>
-          <h3>Akasha</h3>
-          <p>Answers <strong>all three simultaneously</strong>. One unified engine, one query language, zero ETL.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features -->
+  <!-- ═══ FEATURES ══════════════════════════════════════════════════════ -->
   <section class="section" id="features">
     <div class="container">
-      <div class="section-label">Core Features</div>
+      <p class="section-eyebrow">Core Features</p>
       <h2 class="section-title">Everything You Need.<br/>Nothing You Don't.</h2>
       <div class="features-grid">
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <div class="feat">
+          <div class="feat-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </div>
-          <h3>Temporal Index</h3>
-          <p>Every record is timestamped at nanosecond precision. Time-travel queries with O(log n) range scans over an ordered BTree index. Query any past point in time.</p>
-          <code class="feature-code">time BETWEEN "2024-01-01" AND now()</code>
+          <h3>Nanosecond Precision</h3>
+          <p>Timestamps stored as i64 nanoseconds since Unix epoch. BTree range scans with configurable limits. Time-travel to any past moment in O(log n).</p>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="4"/><circle cx="15" cy="15" r="4"/><line x1="12.5" y1="5.5" x2="15" y2="11"/></svg>
+        <div class="feat">
+          <div class="feat-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="3"/><circle cx="19" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="5.5" y1="8.5" x2="11" y2="15.5"/><line x1="18.5" y1="8.5" x2="13" y2="15.5"/></svg>
           </div>
-          <h3>HNSW Semantic Index</h3>
-          <p>Hand-rolled Hierarchical Navigable Small World graph for O(log n) approximate nearest-neighbor search. Supports configurable recall/speed tradeoffs via M and ef parameters.</p>
-          <code class="feature-code">similar_to embedding([...]) WITH threshold 0.9</code>
+          <h3>Hand-Rolled HNSW</h3>
+          <p>Zero external dependencies for vector search. Implements the Malkov &amp; Yashunin 2018 algorithm from scratch. M=16, ef_construction=200, tunable recall/speed.</p>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        <div class="feat">
+          <div class="feat-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
           </div>
-          <h3>Causal DAG</h3>
-          <p>Every record can declare its causal predecessors. Akasha maintains a directed acyclic graph of cause-and-effect relationships, queryable with BFS in both directions.</p>
-          <code class="feature-code">caused_by "abc123" WITH depth 5</code>
+          <h3>Causal Graph Traversal</h3>
+          <p>Declare predecessors at write time. Bidirectional adjacency lists for forward (effects) and backward (causes) BFS. Shortest path between any two records.</p>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        <div class="feat">
+          <div class="feat-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           </div>
-          <h3>Content-Addressed Storage</h3>
-          <p>Every record is identified by the SHA-256 hash of its content. Writes are idempotent. Records are tamper-evident by construction. Backed by sled, a pure-Rust embedded DB.</p>
-          <code class="feature-code">id = SHA256(schema + data + timestamp)</code>
+          <h3>SQSL Query Language</h3>
+          <p>Stratum Query Specification Language — composable temporal, semantic, and causal clauses in one expression. Parsed by a hand-written recursive descent parser.</p>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <div class="feat">
+          <div class="feat-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
           </div>
-          <h3>AQSL Query Language</h3>
-          <p>Akasha Query Specification Language — a composable, declarative query language with first-class temporal, semantic, and causal clauses. Parsed with a hand-written recursive descent parser.</p>
-          <code class="feature-code">FIND records WHERE ... AND ... LIMIT n</code>
+          <h3>Embeddable Library</h3>
+          <p>Use Stratum as a library in any Rust project. Zero configuration, no external services. Open a database with one function call. Async-native with Tokio.</p>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+        <div class="feat">
+          <div class="feat-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           </div>
           <h3>REST API + CLI</h3>
-          <p>Full REST API built on Axum with JSON payloads. A ergonomic CLI for inserting records, running queries, and inspecting the causal graph — all from your terminal.</p>
-          <code class="feature-code">akasha serve --addr 0.0.0.0:7777</code>
+          <p>Full REST API built with Axum. 9 endpoints covering all three dimensions. CORS-enabled. Plus a complete CLI for interactive use and shell scripting.</p>
+        </div>
+
+        <div class="feat">
+          <div class="feat-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>Tamper-Evident by Design</h3>
+          <p>Content-addressed with SHA-256. Idempotent writes — the same record always produces the same ID. Detect data corruption or tampering trivially.</p>
+        </div>
+
+        <div class="feat">
+          <div class="feat-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          </div>
+          <h3>Schema + Metadata Tags</h3>
+          <p>Records carry a versioned schema name (e.g. "payment.v2") and arbitrary key-value metadata tags. Filter by either in SQSL. Schema evolution is append-only.</p>
+        </div>
+
+        <div class="feat">
+          <div class="feat-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          </div>
+          <h3>Startup Index Rebuild</h3>
+          <p>On open, Stratum scans all stored records and rebuilds all three in-memory indices atomically. Restarts are safe and fast — no WAL replay needed.</p>
         </div>
 
       </div>
     </div>
   </section>
 
-  <!-- Architecture -->
-  <section class="section section-dark" id="architecture">
+  <!-- ═══ USE CASES ════════════════════════════════════════════════════ -->
+  <section class="section section-tinted" id="use-cases">
     <div class="container">
-      <div class="section-label">Architecture</div>
-      <h2 class="section-title">Layered by Design</h2>
-      <div class="arch-diagram">
-        <div class="arch-layer arch-layer-api">
-          <span class="arch-label">REST API (Axum)</span>
-          <span class="arch-desc">HTTP/JSON · CORS · Versioned routes</span>
-        </div>
-        <div class="arch-arrow">↓</div>
-        <div class="arch-layer arch-layer-query">
-          <span class="arch-label">Query Engine (AQSL)</span>
-          <span class="arch-desc">Recursive descent parser → Logical plan → Intersect-and-rank executor</span>
-        </div>
-        <div class="arch-arrow">↓</div>
-        <div class="arch-layer-triple">
-          <div class="arch-layer arch-layer-temporal">
-            <span class="arch-label">⏱ Temporal Index</span>
-            <span class="arch-desc">BTreeMap&lt;i64, Vec&lt;Id&gt;&gt;</span>
-            <span class="arch-desc">Range scans · O(log n)</span>
+      <p class="section-eyebrow">Use Cases</p>
+      <h2 class="section-title">Built for Real Engineering Problems</h2>
+      <p class="section-desc">
+        Stratum was designed for scenarios where the temporal, semantic, and causal dimensions
+        of data intersect — situations where existing databases force you to build expensive
+        multi-system pipelines.
+      </p>
+
+      <div class="usecases">
+
+        <div class="usecase-card">
+          <div class="uc-header">
+            <span class="uc-icon">🔎</span>
+            <h3>Incident Investigation & SRE</h3>
           </div>
-          <div class="arch-layer arch-layer-semantic">
-            <span class="arch-label">🔍 Semantic Index</span>
-            <span class="arch-desc">HNSW Graph</span>
-            <span class="arch-desc">kNN · O(log n)</span>
-          </div>
-          <div class="arch-layer arch-layer-causal">
-            <span class="arch-label">🔗 Causal DAG</span>
-            <span class="arch-desc">Adj. lists</span>
-            <span class="arch-desc">BFS · O(V+E)</span>
-          </div>
+          <p>
+            A payment service is failing in production. With three separate databases, you'd query
+            InfluxDB for the timeline, a vector DB for similar past incidents, and a graph DB for
+            the dependency chain — and manually stitch the results together.
+          </p>
+          <p>
+            With Stratum, you issue one query: "Give me all production events from the last hour,
+            semantically similar to this error signature, that were triggered by the recent deploy."
+            The causal chain and similar past incidents appear together, ordered by time.
+          </p>
+          <pre class="uc-code"><span class="k">FIND</span> records
+<span class="k">WHERE</span> time <span class="k">AFTER</span> <span class="s">"2024-03-15T18:00:00Z"</span>
+  <span class="k">AND</span> <span class="f">similar_to</span> <span class="f">embedding</span>([<span class="n">0.88</span>, <span class="n">-0.23</span>, ...]) <span class="k">WITH</span> threshold <span class="n">0.82</span>
+  <span class="k">AND</span> <span class="f">caused_by</span> <span class="s">"deploy-b7f3c1..."</span> <span class="k">WITH</span> depth <span class="n">10</span>
+  <span class="k">AND</span> tag environment = <span class="s">"production"</span>
+<span class="k">ORDER BY</span> time <span class="k">ASC</span> <span class="k">LIMIT</span> <span class="n">200</span></pre>
         </div>
-        <div class="arch-arrow">↓</div>
-        <div class="arch-layer arch-layer-storage">
-          <span class="arch-label">Storage Engine (sled)</span>
-          <span class="arch-desc">Content-addressed · SHA-256 keys · Append-only · JSON values · Flush-on-write</span>
+
+        <div class="usecase-card">
+          <div class="uc-header">
+            <span class="uc-icon">🤖</span>
+            <h3>AI Memory & Agentic Systems</h3>
+          </div>
+          <p>
+            AI agents and LLM applications need persistent memory — a store of past observations,
+            tool calls, reasoning steps, and responses — that can be retrieved by semantic similarity
+            (what is this message about?) and temporal context (when did this happen?) and causal
+            relationships (what did this observation cause the agent to do?).
+          </p>
+          <p>
+            Stratum is purpose-built for this. Store every agent action as a record with an embedding
+            and causal link to its triggering observation. Retrieve relevant context for any new input
+            using all three dimensions simultaneously.
+          </p>
+          <pre class="uc-code"><span class="k">FIND</span> records
+<span class="k">WHERE</span> <span class="f">similar_to</span> <span class="f">embedding</span>(current_context_embedding)
+    <span class="k">WITH</span> threshold <span class="n">0.9</span>
+  <span class="k">AND</span> time <span class="k">AFTER</span> session_start_time
+  <span class="k">AND</span> schema = <span class="s">"agent.observation.v1"</span>
+<span class="k">ORDER BY</span> relevance <span class="k">LIMIT</span> <span class="n">20</span></pre>
         </div>
+
+        <div class="usecase-card">
+          <div class="uc-header">
+            <span class="uc-icon">📋</span>
+            <h3>Event Sourcing & Audit Logs</h3>
+          </div>
+          <p>
+            Event sourcing systems need an immutable event log with replay capability, but they also
+            need to answer questions like "what commands caused this aggregate state?" and "which events
+            from last quarter are semantically related to this compliance issue?"
+          </p>
+          <p>
+            Stratum's append-only, content-addressed log is a natural event store. The causal graph
+            models command-event chains. Semantic embeddings on event payloads make compliance
+            investigations instant.
+          </p>
+          <pre class="uc-code"><span class="c">// Replay state up to a point in time</span>
+<span class="k">FIND</span> records
+<span class="k">WHERE</span> time <span class="k">BEFORE</span> <span class="s">"2024-09-01T00:00:00Z"</span>
+  <span class="k">AND</span> schema = <span class="s">"account.event.v2"</span>
+<span class="k">ORDER BY</span> time <span class="k">ASC</span></pre>
+        </div>
+
+        <div class="usecase-card">
+          <div class="uc-header">
+            <span class="uc-icon">🏥</span>
+            <h3>Healthcare & Clinical Decisions</h3>
+          </div>
+          <p>
+            Clinical decision trails need time (when was this prescribed?), semantics (find similar
+            cases from the literature), and causality (what led to this outcome?). Stratum provides
+            GDPR-compliant storage with the right-to-erasure delete API, tamper-evident records
+            for regulatory audits, and causal chains for explainability.
+          </p>
+          <pre class="uc-code"><span class="c">// Find similar patient cases and their causal chains</span>
+<span class="k">FIND</span> records
+<span class="k">WHERE</span> <span class="f">similar_to</span> <span class="f">embedding</span>(symptoms_vector) <span class="k">WITH</span> threshold <span class="n">0.87</span>
+  <span class="k">AND</span> schema = <span class="s">"clinical.observation.v1"</span>
+<span class="k">ORDER BY</span> relevance <span class="k">LIMIT</span> <span class="n">10</span></pre>
+        </div>
+
+        <div class="usecase-card">
+          <div class="uc-header">
+            <span class="uc-icon">📈</span>
+            <h3>Financial Systems & Trading</h3>
+          </div>
+          <p>
+            Financial systems need to track transaction causality (a refund was caused by a charge,
+            which was caused by a cart checkout), correlate with temporal market data, and find
+            semantically similar past transactions for fraud detection — all with nanosecond
+            timestamp precision and immutable records for regulatory compliance.
+          </p>
+          <pre class="uc-code"><span class="c">// Find causally related transactions with similar patterns</span>
+<span class="k">FIND</span> records
+<span class="k">WHERE</span> <span class="f">caused_by</span> <span class="s">"order-8f2a..."</span> <span class="k">WITH</span> depth <span class="n">5</span>
+  <span class="k">AND</span> <span class="f">similar_to</span> <span class="f">embedding</span>(fraud_pattern) <span class="k">WITH</span> threshold <span class="n">0.80</span>
+  <span class="k">AND</span> time <span class="k">BETWEEN</span> <span class="s">"2024-01-01"</span> <span class="k">AND</span> <span class="s">"2024-12-31"</span></pre>
+        </div>
+
+        <div class="usecase-card">
+          <div class="uc-header">
+            <span class="uc-icon">🔬</span>
+            <h3>Scientific Research & Reproducibility</h3>
+          </div>
+          <p>
+            Research workflows have natural causal structure: hypothesis → experiment → result →
+            publication. Stratum lets you model these dependencies explicitly. Find all results
+            causally derived from a hypothesis, search for semantically related prior work, and
+            replay the full provenance chain of any finding.
+          </p>
+          <pre class="uc-code"><span class="c">// Full provenance chain for a finding</span>
+<span class="k">FIND</span> records
+<span class="k">WHERE</span> <span class="f">causes</span> <span class="s">"finding-c9d2..."</span> <span class="k">WITH</span> depth <span class="n">20</span>
+  <span class="k">AND</span> schema = <span class="s">"experiment.v1"</span>
+<span class="k">ORDER BY</span> time <span class="k">ASC</span></pre>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- Query Language -->
+  <!-- ═══ QUERY LANGUAGE ════════════════════════════════════════════════ -->
   <section class="section" id="query-language">
     <div class="container">
-      <div class="section-label">AQSL — Akasha Query Specification Language</div>
-      <h2 class="section-title">Three Dimensions.<br/>One Language.</h2>
-      <div class="aqsl-grid">
+      <p class="section-eyebrow">SQSL — Stratum Query Specification Language</p>
+      <h2 class="section-title">A Query Language Built<br/>for Three Dimensions</h2>
+      <p class="section-desc">
+        SQSL is parsed by a hand-written recursive descent parser — zero external parsing dependencies.
+        Clauses can be combined with <code>AND</code> in any order. The query planner intersects
+        result sets from each clause, then applies ordering and pagination.
+      </p>
 
-        <div class="aqsl-card">
-          <div class="aqsl-card-header">
-            <span class="aqsl-badge aqsl-badge-time">Temporal</span>
-            <span class="aqsl-title">Time-Travel Query</span>
-          </div>
-          <pre class="code-block"><span class="kw">FIND</span> records
-<span class="kw">WHERE</span> time <span class="kw">BETWEEN</span> <span class="str">"2024-01-01T00:00:00Z"</span>
-             <span class="kw">AND</span> <span class="str">"2024-03-31T23:59:59Z"</span>
-  <span class="kw">AND</span> schema = <span class="str">"payment.v2"</span>
-<span class="kw">ORDER BY</span> time <span class="kw">DESC</span>
-<span class="kw">LIMIT</span> <span class="num">100</span></pre>
-          <p class="aqsl-desc">Retrieve all payment records from Q1 2024, most recent first.</p>
-        </div>
+      <div class="grammar-box">
+        <div class="grammar-title">Grammar (simplified)</div>
+        <pre class="grammar-pre">query    := <span class="k">FIND records</span> [<span class="k">WHERE</span> clause (<span class="k">AND</span> clause)*]
+             [<span class="k">ORDER BY</span> (<span class="f">time ASC</span> | <span class="f">time DESC</span> | <span class="f">relevance</span>)]
+             [<span class="k">LIMIT</span> n] [<span class="k">OFFSET</span> n]
 
-        <div class="aqsl-card">
-          <div class="aqsl-card-header">
-            <span class="aqsl-badge aqsl-badge-semantic">Semantic</span>
-            <span class="aqsl-title">Meaning-Based Search</span>
-          </div>
-          <pre class="code-block"><span class="kw">FIND</span> records
-<span class="kw">WHERE</span> similar_to <span class="fn">embedding</span>([
-  <span class="num">0.128</span>, <span class="num">0.934</span>, <span class="num">-0.241</span>, ...
-])
-<span class="kw">WITH</span> threshold <span class="num">0.88</span>
-<span class="kw">ORDER BY</span> relevance
-<span class="kw">LIMIT</span> <span class="num">10</span></pre>
-          <p class="aqsl-desc">Find semantically similar records using cosine similarity on stored embeddings.</p>
-        </div>
+clause   := time <span class="k">BETWEEN</span> time_ref <span class="k">AND</span> time_ref
+           | time <span class="k">AFTER</span> time_ref
+           | time <span class="k">BEFORE</span> time_ref
+           | <span class="f">similar_to embedding</span>([f32, ...]) [<span class="k">WITH threshold</span> f32]
+           | <span class="f">caused_by</span> hex_id [<span class="k">WITH depth</span> n]
+           | <span class="f">causes</span> hex_id [<span class="k">WITH depth</span> n]
+           | <span class="f">schema</span> = <span class="s">"name"</span>
+           | <span class="f">tag</span> key = <span class="s">"value"</span>
 
-        <div class="aqsl-card">
-          <div class="aqsl-card-header">
-            <span class="aqsl-badge aqsl-badge-causal">Causal</span>
-            <span class="aqsl-title">Root-Cause Traversal</span>
-          </div>
-          <pre class="code-block"><span class="kw">FIND</span> records
-<span class="kw">WHERE</span> caused_by <span class="str">"a3f8e2b1..."</span>
-<span class="kw">WITH</span> depth <span class="num">5</span>
-<span class="kw">ORDER BY</span> time <span class="kw">ASC</span>
-<span class="kw">LIMIT</span> <span class="num">50</span></pre>
-          <p class="aqsl-desc">Find everything that was triggered (directly or transitively) by a root event, up to 5 hops deep.</p>
-        </div>
-
-        <div class="aqsl-card aqsl-card-combined">
-          <div class="aqsl-card-header">
-            <span class="aqsl-badge aqsl-badge-combined">Combined</span>
-            <span class="aqsl-title">All Three Dimensions</span>
-          </div>
-          <pre class="code-block"><span class="kw">FIND</span> records
-<span class="kw">WHERE</span> time <span class="kw">AFTER</span> <span class="str">"2024-06-01T00:00:00Z"</span>
-  <span class="kw">AND</span> similar_to <span class="fn">embedding</span>([<span class="num">0.91</span>, <span class="num">0.23</span>, ...])
-      <span class="kw">WITH</span> threshold <span class="num">0.85</span>
-  <span class="kw">AND</span> caused_by <span class="str">"incident-root-id..."</span>
-      <span class="kw">WITH</span> depth <span class="num">3</span>
-  <span class="kw">AND</span> tag environment = <span class="str">"production"</span>
-<span class="kw">ORDER BY</span> time <span class="kw">DESC</span>
-<span class="kw">LIMIT</span> <span class="num">25</span></pre>
-          <p class="aqsl-desc">The killer query — find semantically similar events, after a certain time, that were caused by a known incident, tagged as production.</p>
-        </div>
-
+time_ref := <span class="s">"ISO-8601"</span> | unix_nanos | <span class="k">NOW</span> | <span class="k">NOW</span> - nanos</pre>
       </div>
-    </div>
-  </section>
 
-  <!-- API -->
-  <section class="section section-dark" id="api">
-    <div class="container">
-      <div class="section-label">REST API</div>
-      <h2 class="section-title">Simple. Consistent. Predictable.</h2>
-      <div class="api-grid">
-        <div class="api-table">
-          <div class="api-row api-row-header">
-            <span>Method</span><span>Endpoint</span><span>Description</span>
-          </div>
-          <div class="api-row"><span class="method get">GET</span><span>/v1/stats</span><span>Database statistics</span></div>
-          <div class="api-row"><span class="method post">POST</span><span>/v1/records</span><span>Insert a record</span></div>
-          <div class="api-row"><span class="method get">GET</span><span>/v1/records/:id</span><span>Retrieve by content ID</span></div>
-          <div class="api-row"><span class="method post">POST</span><span>/v1/query</span><span>Execute AQSL query</span></div>
-          <div class="api-row"><span class="method get">GET</span><span>/v1/search/time</span><span>Time-range search</span></div>
-          <div class="api-row"><span class="method post">POST</span><span>/v1/search/similar</span><span>Semantic similarity search</span></div>
-          <div class="api-row"><span class="method get">GET</span><span>/v1/causal/:id/effects</span><span>Find causal descendants</span></div>
-          <div class="api-row"><span class="method get">GET</span><span>/v1/causal/:id/causes</span><span>Find causal ancestors</span></div>
-          <div class="api-row"><span class="method get">GET</span><span>/v1/causal/:from/path/:to</span><span>Shortest causal path</span></div>
+      <div class="sqsl-examples">
+        <div class="sqsl-ex">
+          <div class="sqsl-tag sqsl-tag-time">Temporal</div>
+          <h4>Time-range with time-travel</h4>
+          <pre><span class="k">FIND</span> records
+<span class="k">WHERE</span> time <span class="k">BETWEEN</span> <span class="s">"2024-Q1-start"</span> <span class="k">AND</span> <span class="s">"2024-Q1-end"</span>
+  <span class="k">AND</span> schema = <span class="s">"payment.v2"</span>
+<span class="k">ORDER BY</span> time <span class="k">DESC</span> <span class="k">LIMIT</span> <span class="n">100</span></pre>
+          <p>O(log n) range scan over the temporal BTree index.</p>
         </div>
-        <div class="api-example">
-          <div class="demo-window small">
-            <div class="demo-titlebar">
-              <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
-              <span class="demo-title">curl example</span>
-            </div>
-            <div class="demo-body">
-              <span class="comment"># Insert a record</span><br/>
-              curl -X POST http://localhost:7777/v1/records \<br/>
-              &nbsp;&nbsp;-H <span class="str">'Content-Type: application/json'</span> \<br/>
-              &nbsp;&nbsp;-d <span class="str">'{"schema":"payment.v1",</span><br/>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"data":{"amount":99.99},</span><br/>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"embedding":[0.1,0.9,...]}'</span><br/>
-              <br/>
-              <span class="comment"># → {"id": "a3f8e2b1..."}</span><br/>
-              <br/>
-              <span class="comment"># Run AQSL query</span><br/>
-              curl -X POST http://localhost:7777/v1/query \<br/>
-              &nbsp;&nbsp;-d <span class="str">'{"aqsl":"FIND records WHERE schema = \"payment.v1\" LIMIT 10"}'</span>
-            </div>
-          </div>
+
+        <div class="sqsl-ex">
+          <div class="sqsl-tag sqsl-tag-semantic">Semantic</div>
+          <h4>Nearest-neighbor semantic search</h4>
+          <pre><span class="k">FIND</span> records
+<span class="k">WHERE</span> <span class="f">similar_to</span> <span class="f">embedding</span>([<span class="n">0.91</span>, <span class="n">0.23</span>, <span class="n">-0.14</span>, ...])
+    <span class="k">WITH</span> threshold <span class="n">0.88</span>
+<span class="k">ORDER BY</span> relevance <span class="k">LIMIT</span> <span class="n">10</span></pre>
+          <p>O(log n) HNSW approximate nearest-neighbor. Cosine similarity threshold filters results.</p>
+        </div>
+
+        <div class="sqsl-ex">
+          <div class="sqsl-tag sqsl-tag-causal">Causal</div>
+          <h4>Root-cause traversal</h4>
+          <pre><span class="k">FIND</span> records
+<span class="k">WHERE</span> <span class="f">caused_by</span> <span class="s">"root-event-a3f8..."</span>
+    <span class="k">WITH</span> depth <span class="n">8</span>
+<span class="k">ORDER BY</span> time <span class="k">ASC</span> <span class="k">LIMIT</span> <span class="n">500</span></pre>
+          <p>BFS over the causal DAG. Depth controls how many hops to traverse.</p>
+        </div>
+
+        <div class="sqsl-ex sqsl-ex-wide">
+          <div class="sqsl-tag sqsl-tag-combined">All Three Dimensions</div>
+          <h4>The query that doesn't exist in any other database</h4>
+          <pre><span class="k">FIND</span> records
+<span class="k">WHERE</span> time <span class="k">BETWEEN</span> <span class="s">"2024-01-01T00:00:00Z"</span> <span class="k">AND</span> <span class="s">"2024-12-31T23:59:59Z"</span>
+  <span class="k">AND</span> <span class="f">similar_to</span> <span class="f">embedding</span>([<span class="n">0.91</span>, <span class="n">0.23</span>, <span class="n">-0.14</span>, <span class="n">0.05</span>, ...]) <span class="k">WITH</span> threshold <span class="n">0.82</span>
+  <span class="k">AND</span> <span class="f">caused_by</span> <span class="s">"incident-root-id-a3f8e2b1..."</span> <span class="k">WITH</span> depth <span class="n">5</span>
+  <span class="k">AND</span> tag environment = <span class="s">"production"</span>
+  <span class="k">AND</span> schema = <span class="s">"alert.v2"</span>
+<span class="k">ORDER BY</span> time <span class="k">DESC</span> <span class="k">LIMIT</span> <span class="n">25</span></pre>
+          <p>All five clause types combined. The query planner intersects all result sets, applies sort, then paginates. Each index is queried independently and concurrently.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Quick Start -->
-  <section class="section" id="quick-start">
+  <!-- ═══ QUICK START ═══════════════════════════════════════════════════ -->
+  <section class="section section-tinted" id="quick-start">
     <div class="container">
-      <div class="section-label">Quick Start</div>
+      <p class="section-eyebrow">Documentation</p>
       <h2 class="section-title">Up and Running in 60 Seconds</h2>
-      <div class="steps">
 
-        <div class="step">
-          <div class="step-num">01</div>
-          <div class="step-content">
-            <h3>Install</h3>
-            <pre class="code-block">cargo install akasha</pre>
+      <div class="docs-grid">
+        <div class="docs-main">
+
+          <div class="doc-step">
+            <div class="step-label">01 · Install</div>
+            <pre><span class="c"># From crates.io (coming soon)</span>
+cargo install stratum
+
+<span class="c"># From source</span>
+git clone https://github.com/vignesh2027/stratum
+cd stratum
+cargo build --release</pre>
           </div>
-        </div>
 
-        <div class="step">
-          <div class="step-num">02</div>
-          <div class="step-content">
-            <h3>Start the server</h3>
-            <pre class="code-block">akasha serve --db ./mydata --addr 0.0.0.0:7777</pre>
+          <div class="doc-step">
+            <div class="step-label">02 · Start the Server</div>
+            <pre>stratum serve --db ./mydata --addr 0.0.0.0:7777
+
+<span class="c">  ┌─────────────────────────────────────────┐
+  │   S T R A T U M  v0.1.0               │
+  │   Temporal · Semantic · Causal Database  │
+  └─────────────────────────────────────────┘
+
+  ● Listening  http://0.0.0.0:7777
+  ● Database   ./mydata</span></pre>
           </div>
-        </div>
 
-        <div class="step">
-          <div class="step-num">03</div>
-          <div class="step-content">
-            <h3>Insert your first record</h3>
-            <pre class="code-block">akasha insert \
-  --schema <span class="str">"event.v1"</span> \
-  --data <span class="str">'{"msg":"hello akasha","level":"info"}'</span></pre>
+          <div class="doc-step">
+            <div class="step-label">03 · Insert Records</div>
+            <pre><span class="c"># Via CLI</span>
+ID=$(stratum insert \
+  --schema <span class="s">"payment.v2"</span> \
+  --data <span class="s">'{"amount": 99.99, "currency": "USD"}'</span>)
+
+<span class="c"># Via REST API</span>
+curl -X POST http://localhost:7777/v1/records \
+  -H <span class="s">'Content-Type: application/json'</span> \
+  -d <span class="s">'{
+    "schema": "payment.v2",
+    "data": {"amount": 99.99},
+    "embedding": [0.91, 0.23, -0.14],
+    "metadata": {"environment": "production"}
+  }'</span>
+<span class="c"># → {"id": "a3f8e2b1c4d9f6e2..."}</span></pre>
           </div>
-        </div>
 
-        <div class="step">
-          <div class="step-num">04</div>
-          <div class="step-content">
-            <h3>Query it</h3>
-            <pre class="code-block">akasha query <span class="str">"FIND records WHERE schema = \"event.v1\" LIMIT 10"</span></pre>
+          <div class="doc-step">
+            <div class="step-label">04 · Query with SQSL</div>
+            <pre><span class="c"># Via CLI</span>
+stratum query <span class="s">"FIND records WHERE schema = \"payment.v2\" LIMIT 10"</span>
+
+<span class="c"># Via REST API</span>
+curl -X POST http://localhost:7777/v1/query \
+  -H <span class="s">'Content-Type: application/json'</span> \
+  -d <span class="s">'{"sqsl": "FIND records WHERE time AFTER \"2024-01-01T00:00:00Z\" AND schema = \"payment.v2\" ORDER BY time DESC LIMIT 100"}'</span></pre>
           </div>
-        </div>
 
-      </div>
+          <div class="doc-step">
+            <div class="step-label">05 · Use as a Rust Library</div>
+            <pre><span class="c">// Cargo.toml</span>
+[dependencies]
+stratum = <span class="s">"0.1"</span>
+tokio  = { version = <span class="s">"1"</span>, features = [<span class="s">"full"</span>] }
 
-      <div class="embed-section">
-        <h3>Or use as a Rust library</h3>
-        <pre class="code-block"><span class="comment">// Cargo.toml</span>
-akasha = <span class="str">"0.1"</span>
+<span class="c">// src/main.rs</span>
+<span class="k">use</span> stratum::{Stratum, RecordBuilder};
 
-<span class="comment">// src/main.rs</span>
-<span class="kw">use</span> akasha::{Akasha, RecordBuilder};
+<span class="k">let</span> db = Stratum::open(<span class="s">"/data/stratum"</span>).await?;
 
-<span class="kw">let</span> db = Akasha::open(<span class="str">"/data/akasha"</span>).<span class="fn">await</span>?;
-
-<span class="kw">let</span> record = RecordBuilder::new()
-    .schema(<span class="str">"payment.v1"</span>)
-    .data(json!({<span class="str">"amount"</span>: <span class="num">99.99</span>}))
-    .embedding(my_embedding_vector)
-    .caused_by(vec![parent_id])
+<span class="k">let</span> record = RecordBuilder::new()
+    .schema(<span class="s">"event.v1"</span>)
+    .data(json!({<span class="s">"type"</span>: <span class="s">"user_signup"</span>, <span class="s">"user_id"</span>: <span class="s">"u42"</span>}))
+    .embedding(embed(<span class="s">"user signup"</span>))
+    .tag(<span class="s">"environment"</span>, <span class="s">"production"</span>)
     .build()?;
 
-<span class="kw">let</span> id = db.insert(record).<span class="fn">await</span>?;
+<span class="k">let</span> id = db.insert(record).await?;
 
-<span class="comment">// Query with AQSL</span>
-<span class="kw">let</span> results = db.query(<span class="str">"FIND records WHERE schema = \"payment.v1\" LIMIT 50"</span>).<span class="fn">await</span>?;</pre>
+<span class="c">// Query via SQSL</span>
+<span class="k">let</span> results = db.query(
+    <span class="s">"FIND records WHERE schema = \"event.v1\" LIMIT 50"</span>
+).await?;
+
+<span class="c">// Or use the typed API</span>
+<span class="k">let</span> similar = db.find_similar(&amp;embedding, <span class="n">10</span>, <span class="n">0.85</span>).await?;
+<span class="k">let</span> effects = db.find_effects(&amp;id, <span class="n">5</span>).await?;</pre>
+          </div>
+
+        </div>
+
+        <div class="docs-side">
+          <div class="api-ref">
+            <h3>REST Endpoints</h3>
+            <div class="api-list">
+              <div class="api-item"><span class="m-get">GET</span><span>/v1/stats</span></div>
+              <div class="api-item"><span class="m-post">POST</span><span>/v1/records</span></div>
+              <div class="api-item"><span class="m-get">GET</span><span>/v1/records/:id</span></div>
+              <div class="api-item"><span class="m-post">POST</span><span>/v1/query</span></div>
+              <div class="api-item"><span class="m-get">GET</span><span>/v1/search/time</span></div>
+              <div class="api-item"><span class="m-post">POST</span><span>/v1/search/similar</span></div>
+              <div class="api-item"><span class="m-get">GET</span><span>/v1/causal/:id/effects</span></div>
+              <div class="api-item"><span class="m-get">GET</span><span>/v1/causal/:id/causes</span></div>
+              <div class="api-item"><span class="m-get">GET</span><span>/v1/causal/:from/path/:to</span></div>
+            </div>
+
+            <h3 style="margin-top:32px">CLI Commands</h3>
+            <div class="api-list">
+              <div class="api-item mono"><span class="m-cmd">CMD</span><span>stratum serve</span></div>
+              <div class="api-item mono"><span class="m-cmd">CMD</span><span>stratum insert</span></div>
+              <div class="api-item mono"><span class="m-cmd">CMD</span><span>stratum get &lt;id&gt;</span></div>
+              <div class="api-item mono"><span class="m-cmd">CMD</span><span>stratum query &lt;sqsl&gt;</span></div>
+              <div class="api-item mono"><span class="m-cmd">CMD</span><span>stratum stats</span></div>
+            </div>
+
+            <h3 style="margin-top:32px">Test Coverage</h3>
+            <div class="coverage-list">
+              <div class="cov-row"><span>record</span><span class="cov-val">4 tests</span></div>
+              <div class="cov-row"><span>storage</span><span class="cov-val">5 tests</span></div>
+              <div class="cov-row"><span>temporal index</span><span class="cov-val">4 tests</span></div>
+              <div class="cov-row"><span>semantic index</span><span class="cov-val">4 tests</span></div>
+              <div class="cov-row"><span>causal graph</span><span class="cov-val">5 tests</span></div>
+              <div class="cov-row"><span>SQSL parser</span><span class="cov-val">6 tests</span></div>
+              <div class="cov-row"><span>integration</span><span class="cov-val">14 tests</span></div>
+              <div class="cov-row"><span>doc tests</span><span class="cov-val">3 tests</span></div>
+              <div class="cov-row cov-total"><span><strong>Total</strong></span><span class="cov-val"><strong>45 passing</strong></span></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Use Cases -->
-  <section class="section section-dark" id="use-cases">
+  <!-- ═══ API SECTION ═══════════════════════════════════════════════════ -->
+  <section class="section" id="api">
     <div class="container">
-      <div class="section-label">Use Cases</div>
-      <h2 class="section-title">Built For the Real World</h2>
-      <div class="usecases-grid">
-        <div class="usecase"><div class="uc-icon">🔍</div><h3>Incident Investigation</h3><p>Trace the full causal chain of a production incident. Find semantically similar past incidents. All in one query.</p></div>
-        <div class="usecase"><div class="uc-icon">🤖</div><h3>AI Memory Systems</h3><p>Store embeddings from LLM conversations with causal context ("this message caused this response") and temporal ordering.</p></div>
-        <div class="usecase"><div class="uc-icon">📊</div><h3>Event Sourcing</h3><p>Immutable, append-only event log with content-addressing. Replay any past state. Track causal chains across microservices.</p></div>
-        <div class="usecase"><div class="uc-icon">🏥</div><h3>Healthcare / Compliance</h3><p>Audit trails with tamper-evident records. "What decisions led to this outcome?" answered with causal graph traversal.</p></div>
-        <div class="usecase"><div class="uc-icon">📈</div><h3>Financial Systems</h3><p>Track transaction causality (payment caused refund caused notification), with temporal precision and semantic search over descriptions.</p></div>
-        <div class="usecase"><div class="uc-icon">🔬</div><h3>Research Workflows</h3><p>Model experimental dependencies ("experiment B was caused by hypothesis from experiment A") with full reproducibility.</p></div>
+      <p class="section-eyebrow">REST API</p>
+      <h2 class="section-title">Simple, Predictable, Consistent.</h2>
+      <div class="api-examples">
+
+        <div class="api-ex">
+          <h4>Insert a record with embedding and causal link</h4>
+          <pre>curl -X POST http://localhost:7777/v1/records \
+  -H <span class="s">'Content-Type: application/json'</span> \
+  -d <span class="s">'{
+    "schema": "notification.v1",
+    "data": {"type": "payment_failed", "user_id": "u42"},
+    "embedding": [0.12, 0.88, -0.31, 0.05],
+    "causes": ["a3f8e2b1c4d9f6e2..."],
+    "metadata": {"environment": "production", "region": "us-east-1"}
+  }'</span>
+
+<span class="c">→ {"id": "b1c2d3e4f5a6b7c8..."}</span></pre>
+        </div>
+
+        <div class="api-ex">
+          <h4>Semantic search with threshold</h4>
+          <pre>curl -X POST http://localhost:7777/v1/search/similar \
+  -H <span class="s">'Content-Type: application/json'</span> \
+  -d <span class="s">'{
+    "embedding": [0.12, 0.88, -0.31, 0.05],
+    "k": 10,
+    "threshold": 0.82
+  }'</span>
+
+<span class="c">→ {"count": 3, "results": [
+    {"score": 0.977, "record": {...}},
+    {"score": 0.921, "record": {...}},
+    {"score": 0.841, "record": {...}}
+  ]}</span></pre>
+        </div>
+
+        <div class="api-ex">
+          <h4>Causal chain traversal</h4>
+          <pre>curl http://localhost:7777/v1/causal/a3f8e2b1.../effects?depth=5
+
+<span class="c">→ {
+    "count": 4,
+    "records": [
+      {"schema": "auth.check.v1", ...},
+      {"schema": "inventory.check.v1", ...},
+      {"schema": "payment.charge.v1", ...},
+      {"schema": "notification.email.v1", ...}
+    ]
+  }</span></pre>
+        </div>
+
+        <div class="api-ex">
+          <h4>Shortest causal path</h4>
+          <pre>curl http://localhost:7777/v1/causal/a3f8.../path/e7f2...
+
+<span class="c">→ {
+    "path": ["a3f8...", "b4c5...", "e7f2..."],
+    "length": 3
+  }</span></pre>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
+  <!-- ═══ FOOTER ════════════════════════════════════════════════════════ -->
   <footer class="footer">
     <div class="container">
-      <div class="footer-inner">
+      <div class="footer-top">
         <div class="footer-brand">
-          <a href="#" class="nav-logo">
-            <span class="logo-mark">◈</span>
-            <span class="logo-text">akasha</span>
+          <a href="#" class="nav-logo footer-logo">
+            <span class="logo-icon">◈</span>
+            <span class="logo-name">stratum</span>
           </a>
-          <p>The Temporal-Semantic-Causal Database</p>
-          <p class="footer-author">Built by <a href="https://github.com/vignesh2027" target="_blank">Vignesh S</a> · MIT License</p>
+          <p>The Temporal-Semantic-Causal Database<br/>
+             Layered records for a three-dimensional world.</p>
+          <p class="footer-author">Built by <a href="https://github.com/vignesh2027" target="_blank">Vignesh S</a><br/>
+             CSE 2022–26 · MIT License</p>
         </div>
-        <div class="footer-links">
-          <div class="footer-col">
+        <div class="footer-cols">
+          <div class="fcol">
             <h4>Project</h4>
-            <a href="https://github.com/vignesh2027/akasha" target="_blank">GitHub</a>
-            <a href="https://github.com/vignesh2027/akasha/issues" target="_blank">Issues</a>
-            <a href="https://github.com/vignesh2027/akasha/releases" target="_blank">Releases</a>
+            <a href="https://github.com/vignesh2027/stratum" target="_blank">GitHub</a>
+            <a href="https://github.com/vignesh2027/stratum/issues" target="_blank">Issues</a>
+            <a href="https://github.com/vignesh2027/stratum/releases" target="_blank">Releases</a>
+            <a href="https://github.com/vignesh2027/stratum/actions" target="_blank">CI Status</a>
           </div>
-          <div class="footer-col">
-            <h4>Docs</h4>
+          <div class="fcol">
+            <h4>Documentation</h4>
             <a href="#quick-start">Quick Start</a>
-            <a href="#query-language">AQSL Reference</a>
+            <a href="#query-language">SQSL Reference</a>
             <a href="#api">API Reference</a>
+            <a href="#how-it-works">Architecture</a>
           </div>
-          <div class="footer-col">
+          <div class="fcol">
             <h4>More Projects</h4>
             <a href="https://github.com/vignesh2027/synthron" target="_blank">SYNTHRON</a>
             <a href="https://github.com/vignesh2027/VORTEXRAG" target="_blank">VORTEXRAG</a>
             <a href="https://github.com/vignesh2027/rustkvd" target="_blank">rustkvd</a>
+            <a href="https://github.com/vignesh2027/-FLUXDB" target="_blank">FluxDB</a>
           </div>
         </div>
       </div>
       <div class="footer-bottom">
         <p>© 2026 Vignesh S · Released under the MIT License</p>
-        <p>Named after the Hindu concept of akasha (आकाश) — the eternal, all-pervading medium that records all events.</p>
+        <p><em>Stratum</em> — named after geological strata: layered, ordered records of time, each stratum
+           telling a richer story than any single layer alone.</p>
       </div>
     </div>
   </footer>

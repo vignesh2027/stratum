@@ -1,22 +1,22 @@
 [package]
-name = "akasha"
+name = "stratum"
 version = "0.1.0"
 edition = "2021"
 authors = ["Vignesh S <applemacbook6sep2004@gmail.com>"]
 description = "The world's first Temporal-Semantic-Causal database — query across time, meaning, and causality simultaneously"
 license = "MIT"
-repository = "https://github.com/vignesh2027/akasha"
-homepage = "https://vignesh2027.github.io/akasha"
+repository = "https://github.com/vignesh2027/stratum"
+homepage = "https://vignesh2027.github.io/stratum"
 keywords = ["database", "temporal", "vector-search", "causal", "embedded"]
 categories = ["database", "data-structures"]
 readme = "README.md"
 
 [[bin]]
-name = "akasha"
+name = "stratum"
 path = "src/main.rs"
 
 [lib]
-name = "akasha"
+name = "stratum"
 path = "src/lib.rs"
 
 [[bench]]
